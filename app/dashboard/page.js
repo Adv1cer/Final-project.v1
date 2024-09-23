@@ -106,7 +106,7 @@ function Dashboard() {
                   <th className="py-2 px-4 border-b">ชื่อ-นามสกุล</th>
                   <th className="py-2 px-4 border-b">รหัสนักศึกษา</th>
                   <th className="py-2 px-4 border-b">วันที่และเวลา</th>
-                  <th className="py-2 px-4 border-b">เเก้ไขข้อมูล</th>
+                  <th className="py-2 px-4 border-b">ดำเนินการ</th>
                 </tr>
               </thead>
               <tbody>
@@ -117,7 +117,7 @@ function Dashboard() {
                     <td className="py-2 px-4 border-b">{new Date(ticket.datetime).toLocaleString()}</td>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <td className="py-2 px-4 border-b text-blue-700 cursor-pointer">ดูรายละเอียด</td>
+                        <td className="py-2 px-4 border-b text-blue-700 cursor-pointer">สั่งยา</td>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
@@ -154,6 +154,7 @@ function Dashboard() {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
+                    <td className="py-2 px-4 border-b text-red-500 cursor-pointer">เสร็จสิน</td>
                   </tr>
                 ))}
               </tbody>
@@ -170,7 +171,7 @@ function Dashboard() {
                   <th className="py-2 px-4 border-b">ชื่อ-นามสกุล</th>
                   <th className="py-2 px-4 border-b">รหัสนักศึกษา</th>
                   <th className="py-2 px-4 border-b">วันที่และเวลา</th>
-                  <th className="py-2 px-4 border-b">เเก้ไขข้อมูล</th>
+                  <th className="py-2 px-4 border-b">ดูรายละเอียด</th>
                 </tr>
               </thead>
               <tbody>
@@ -215,7 +216,6 @@ function Dashboard() {
                           <DialogClose asChild>
                             <Button type="button" variant="secondary">Close</Button>
                           </DialogClose>
-                          <Button type="submit" onClick={() => handleTicket(ticket)}>สั่งยา</Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>

@@ -82,7 +82,7 @@ const HealthForm = () => {
 
       if (response.ok) {
         const symptomLabels = {
-          "1": "ปวดหัว",
+          "1": "ปวดหัวเป็นไข้",
           "2": "ปวดท้อง",
           "3": "ท้องเสีย",
           "4": "ปวดรอบเดือน",
@@ -152,7 +152,7 @@ const HealthForm = () => {
                 อาการ
               </label>
               <div className="mt-2 grid grid-cols-4 gap-4 whitespace-nowrap">
-                {[{ label: "ปวดหัว", id: "1" }, { label: "ปวดท้อง", id: "2" }, { label: "ท้องเสีย", id: "3" }, { label: "ปวดรอบเดือน", id: "4" }, { label: "เป็นหวัด", id: "5" }, { label: "ปวดฟัน", id: "6" }, { label: "เป็นแผล", id: "7" }, { label: "เป็นลม", id: "8" }, { label: "ตาเจ็บ", id: "9" }, { label: "ผื่นคัน", id: "10" }, { label: "นอนพัก", id: "11" }, { label: "อื่นๆ", id: "12" }].map((item) => (
+                {[{ label: "ปวดหัวเป็นไข้", id: "1" }, { label: "ปวดท้อง", id: "2" }, { label: "ท้องเสีย", id: "3" }, { label: "ปวดรอบเดือน", id: "4" }, { label: "เป็นหวัด", id: "5" }, { label: "ปวดฟัน", id: "6" }, { label: "เป็นแผล", id: "7" }, { label: "เป็นลม", id: "8" }, { label: "ตาเจ็บ", id: "9" }, { label: "ผื่นคัน", id: "10" }, { label: "นอนพัก", id: "11" }, { label: "อื่นๆ", id: "12" }].map((item) => (
                   <div key={item.id}>
                     <input
                       type="checkbox"
