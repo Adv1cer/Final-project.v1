@@ -1,6 +1,5 @@
 "use client"
 
-
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -76,12 +75,19 @@ function Dashboard() {
     return <div>Loading...</div>;
   }
 
-  // Sort tickets by datetime, latest first
+  const today = new Date();
+  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+
   const sortedTickets = tickets.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
   
-  // Filter active and finished tickets
-  const activeTickets = sortedTickets.filter(ticket => ticket.status === 1);
-  const finishedTickets = sortedTickets.filter(ticket => ticket.status !== 1);
+  const todayTickets = sortedTickets.filter(ticket => {
+    const ticketDate = new Date(ticket.datetime);
+    return ticketDate >= startOfDay && ticketDate <= endOfDay;
+  });
+
+  const activeTickets = todayTickets.filter(ticket => ticket.status === 1);
+  const finishedTickets = todayTickets.filter(ticket => ticket.status !== 1);
 
   return (
     <div>
@@ -90,7 +96,6 @@ function Dashboard() {
         <Taskbar />
         <Display />
         <div className="flex flex-col items-center h-screen bg-gray-100 text-center">
-          {/* Active Tickets Table */}
           <div className="bg-white w-full max-w-3xl rounded shadow-md mt-4">
             <div className="bg-blue-900 text-white text-lg font-semibold p-4 rounded-t-md">
               รายชื่อผู้ป่วย (Active)
@@ -101,7 +106,7 @@ function Dashboard() {
                   <th className="py-2 px-4 border-b">ชื่อ-นามสกุล</th>
                   <th className="py-2 px-4 border-b">รหัสนักศึกษา</th>
                   <th className="py-2 px-4 border-b">วันที่และเวลา</th>
-                  <th className="py-2 px-4 border-b">ดูรายละเอียด</th>
+                  <th className="py-2 px-4 border-b">เเก้ไขข้อมูล</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,7 +170,7 @@ function Dashboard() {
                   <th className="py-2 px-4 border-b">ชื่อ-นามสกุล</th>
                   <th className="py-2 px-4 border-b">รหัสนักศึกษา</th>
                   <th className="py-2 px-4 border-b">วันที่และเวลา</th>
-                  <th className="py-2 px-4 border-b">ดูรายละเอียด</th>
+                  <th className="py-2 px-4 border-b">เเก้ไขข้อมูล</th>
                 </tr>
               </thead>
               <tbody>
@@ -174,6 +179,7 @@ function Dashboard() {
                     <td className="py-2 px-4 border-b">{ticket.student_name}</td>
                     <td className="py-2 px-4 border-b">{ticket.student_id}</td>
                     <td className="py-2 px-4 border-b">{new Date(ticket.datetime).toLocaleString()}</td>
+
                     <Dialog>
                       <DialogTrigger asChild>
                         <td className="py-2 px-4 border-b text-blue-700 cursor-pointer">ดูรายละเอียด</td>

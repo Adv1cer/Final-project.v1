@@ -12,9 +12,6 @@ export default function DashboardLayout({ children }) {
     return (
 
         <section className={inter.className}>
-            <header>
-
-            </header>
             <AuthProvider>
             <IdleTimer />
                 {children}

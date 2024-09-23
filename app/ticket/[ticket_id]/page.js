@@ -74,7 +74,6 @@ export default function TicketPage() {
                 <div className="flex min-h-screen bg-gray-100">
                     <div className="bg-white shadow-md rounded-lg p-8 max-w-lg w-full m-auto">
                         <h1 className="flex justify-center content-center text-xl">Ticket Details</h1>
-                        <p>Ticket ID: {ticket.ticket_id}</p>
                         <p>Date and Time: {new Date(ticket.datetime).toLocaleString()}</p>
                         <p>Student Name: {ticket.student_name}</p>
                         <h2>Symptoms</h2>
