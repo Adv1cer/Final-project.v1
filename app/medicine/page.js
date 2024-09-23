@@ -206,7 +206,7 @@
                                 <select id="unit" value={unit} onChange={(e) => setUnit(e.target.value)} className="col-span-3 border rounded px-2 py-1">
                                     <option value="">Select Unit</option>
                                     {units.map(unit => (
-                                        <option key={unit.unit_id} value={unit.unit_id}>{unit.unit_id}</option>
+                                        <option key={unit.unit_id} value={unit.unit_id}>{unit.unit_type}</option>
                                     ))}
                                 </select>
                             </div>
