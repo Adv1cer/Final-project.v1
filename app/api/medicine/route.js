@@ -33,7 +33,8 @@ async function getPillStock() {
                 pill_type.type_name,
                 pillstock.expire, 
                 pillstock.total, 
-                unit.unit_id
+                unit.unit_id,
+                unit.unit_type
             FROM pillstock
             JOIN pill ON pillstock.pill_id = pill.pill_id
             JOIN unit ON pillstock.unit_id = unit.unit_id

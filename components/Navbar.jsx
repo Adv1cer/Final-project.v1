@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { useToast } from "@/hooks/use-toast";
 
 function Navbar({ session }) {
+    
     const { toast } = useToast();
 
     const handleSignOut = async (e) => {

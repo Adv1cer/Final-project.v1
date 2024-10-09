@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -43,6 +43,21 @@ function Dashboard() {
     router.push(url);
   };
 
+  const fetchTickets = async () => {
+    try {
+      const res = await fetch('/api/dashboard');
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await res.json();
+      setTickets(data);
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (status === 'loading') {
       return;
@@ -53,22 +68,11 @@ function Dashboard() {
       return;
     }
 
-    const fetchTickets = async () => {
-      try {
-        const res = await fetch('/api/dashboard');
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await res.json();
-        setTickets(data);
-      } catch (error) {
-        console.error('Error fetching tickets:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTickets();
+
+    const intervalId = setInterval(fetchTickets, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [session, status, router]);
 
   if (loading) {

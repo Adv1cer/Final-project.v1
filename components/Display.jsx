@@ -15,20 +15,25 @@ function Display() {
 
       const today = new Date();
       const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
       const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-      const activeTickets = data.filter(ticket => ticket.status.toString().startsWith('1'));
+
+      const activeTodayTickets = data.filter(ticket => {
+        const ticketDate = new Date(ticket.datetime);
+        return ticket.status.toString().startsWith('1') && ticketDate >= startOfDay && ticketDate <= endOfDay;
+      });
 
       const totalTodayTickets = data.filter(ticket => {
         const ticketDate = new Date(ticket.datetime);
-        return ticketDate >= startOfDay && ticketDate < new Date(startOfDay).setDate(startOfDay.getDate() + 1);
+        return ticketDate >= startOfDay && ticketDate <= endOfDay;
       });
 
       const totalMonthTickets = data.filter(ticket => {
         return new Date(ticket.datetime) >= startOfMonth;
       });
 
-      setActiveCount(activeTickets.length);
+      setActiveCount(activeTodayTickets.length);
       setTotalToday(totalTodayTickets.length);
       setTotalMonth(totalMonthTickets.length);
     } catch (err) {
