@@ -35,7 +35,6 @@ export default function TicketPage() {
         async function fetchTicket() {
             try {
                 const response = await fetch(`/api/ticket/${ticket_id}`);
-
                 if (!response.ok) {
                     const text = await response.text();
                     if (text.includes('<!DOCTYPE html>')) {
@@ -61,7 +60,6 @@ export default function TicketPage() {
         async function fetchPillStock() {
             try {
                 const response = await fetch('/api/medicine', { method: 'GET' });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -81,9 +79,9 @@ export default function TicketPage() {
     const handlePillClick = (pill) => {
         setSelectedPills((prevSelectedPills) => {
             if (prevSelectedPills.some(selectedPill => selectedPill.pillstock_id === pill.pillstock_id)) {
-                return prevSelectedPills;
+                return prevSelectedPills; // Return existing array if pill is already selected
             }
-            return [...prevSelectedPills, pill];
+            return [...prevSelectedPills, { ...pill, count: 0 }]; // Initialize count to 0
         });
     };
 
@@ -118,15 +116,13 @@ export default function TicketPage() {
             console.log('Data saved successfully:', data);
 
             // Update the local state to reflect the changes
-            const updatedPillStock = [...pillStock];
-            for (const pill of selectedPills) {
-                const newTotal = pill.total - pill.count;
-                updatedPillStock.forEach((p) => {
-                    if (p.pillstock_id === pill.pillstock_id) {
-                        p.total = newTotal;
-                    }
-                });
-            }
+            const updatedPillStock = pillStock.map(item => {
+                const selectedPill = selectedPills.find(p => p.pillstock_id === item.pillstock_id);
+                if (selectedPill) {
+                    return { ...item, total: item.total - selectedPill.count }; // Deduct quantity from total
+                }
+                return item;
+            });
 
             setPillStock(updatedPillStock);
             setSelectedPills([]);
@@ -203,7 +199,11 @@ export default function TicketPage() {
                                         </thead>
                                         <tbody>
                                             {pillStock.map(item => (
-                                                <tr key={item.pillstock_id} className="border bg-blue-100 cursor-pointer" onClick={() => handlePillClick(item)}>
+                                                <tr 
+                                                    key={item.pillstock_id} 
+                                                    className="border bg-blue-100 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg" 
+                                                    onClick={() => handlePillClick(item)}
+                                                >
                                                     <td className="border px-4 py-2">{item.pillstock_id}</td>
                                                     <td className="border px-4 py-2">{item.pill_name}</td>
                                                     <td className="border px-4 py-2">{item.dose}</td>
@@ -232,7 +232,10 @@ export default function TicketPage() {
                                         <tbody>
                                             {selectedPills.length > 0 ? (
                                                 selectedPills.map((pill, index) => (
-                                                    <tr key={index} className="border bg-blue-100">
+                                                    <tr 
+                                                        key={index} 
+                                                        className="border bg-blue-100 transition-transform transform hover:scale-105 hover:shadow-lg"
+                                                    >
                                                         <td className="border px-4 py-2">{pill.pillstock_id}</td>
                                                         <td className="border px-4 py-2">{pill.pill_name}</td>
                                                         <td className="border px-4 py-2">{pill.dose}</td>

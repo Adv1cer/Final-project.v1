@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { useToast } from "@/hooks/use-toast";
 
 function Navbar({ session }) {
-    
+
     const { toast } = useToast();
 
     const handleSignOut = async (e) => {
@@ -22,10 +22,10 @@ function Navbar({ session }) {
 
     return (
         <nav className="">
-            <div className="bg-blue-900 text-white">
-                <div className="flex justify-between items-center p-3">
+            <div className="bg-blue-900 text-white drop-shadow-lg">
+                <div className="flex justify-between items-center p-1">
                     <div className="flex items-center hover:text-5xl">
-                    <img src="/utcc_logo.png" width={49} className="mr-2 hover:scale-110 transition-transform duration-300" />
+                        <img src="/utcc_logo.png" width={49} className="mr-2 hover:scale-110 transition-transform duration-300" />
                         <div className="text-4xl ">
                             <Link href="/" className="flex hover:scale-110 transition-transform duration-300">
                                 UTCC Infirmary

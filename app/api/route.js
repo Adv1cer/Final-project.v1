@@ -6,9 +6,10 @@ export async function POST(request) {
     const { student_id, student_name, symptom_ids, other_symptom } = await request.json();
 
     const connection = await mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      database: 'medcheckv2',
+      host: process.env.MYSQL_HOST,
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
     });
 
 

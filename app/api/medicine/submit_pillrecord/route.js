@@ -2,9 +2,10 @@ import mysql from 'mysql2/promise';
 import { NextResponse } from 'next/server';
 
 const dbConfig = {
-  host: 'localhost',
-  user: 'root',
-  database: 'medcheckv2',
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
 };
 
 export async function POST(req) {

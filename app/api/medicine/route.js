@@ -18,10 +18,10 @@ async function getPillStock() {
 
     try {
         connection = await mysql.createConnection({
-            host: process.env.MYSQL_HOST || 'localhost',
-            user: process.env.MYSQL_USER || 'root',
-            password: process.env.MYSQL_PASSWORD || '',
-            database: process.env.MYSQL_DATABASE || 'medcheckv2',
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PASSWORD,
+            database: process.env.MYSQL_DATABASE,
         });
 
         const query = `
@@ -62,10 +62,10 @@ async function getTypes() {
 
     try {
         connection = await mysql.createConnection({
-            host: process.env.MYSQL_HOST || 'localhost',
-            user: process.env.MYSQL_USER || 'root',
-            password: process.env.MYSQL_PASSWORD || '',
-            database: process.env.MYSQL_DATABASE || 'medcheckv2',
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PASSWORD,
+            database: process.env.MYSQL_DATABASE,
         });
 
         const query = 'SELECT type_id, type_name FROM pill_type';
@@ -90,10 +90,10 @@ async function getUnits() {
 
     try {
         connection = await mysql.createConnection({
-            host: process.env.MYSQL_HOST || 'localhost',
-            user: process.env.MYSQL_USER || 'root',
-            password: process.env.MYSQL_PASSWORD || '',
-            database: process.env.MYSQL_DATABASE || 'medcheckv2',
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PASSWORD,
+            database: process.env.MYSQL_DATABASE,
         });
 
         const query = 'SELECT unit_id, unit_type FROM unit';
