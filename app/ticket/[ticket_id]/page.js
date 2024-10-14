@@ -198,7 +198,7 @@ export default function TicketPage() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {pillStock.map(item => (
+                                            {pillStock.filter(item => item.total > 0).map(item => (
                                                 <tr 
                                                     key={item.pillstock_id} 
                                                     className="border bg-blue-100 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg" 
