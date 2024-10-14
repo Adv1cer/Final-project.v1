@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./provider";
 import { Toaster } from "@/components/ui/toaster"
+import Footer from "@/components/Footer";
 
 
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
             <Toaster />
           </AuthProvider>
         </main>
+        <Footer />
       </body>
     </html>
   );

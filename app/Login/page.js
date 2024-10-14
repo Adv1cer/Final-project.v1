@@ -11,7 +11,6 @@ export default function() {
     <main>
       <Navbar />
       <LoginForm />
-      <Footer />
     </main>
   );
 };

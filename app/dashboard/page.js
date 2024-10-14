@@ -13,7 +13,6 @@ function Dashboard() {
     <main>
       <Navbar session={session} />
       <DashboardComponent />
-      <Footer />
     </main>
   );
 }

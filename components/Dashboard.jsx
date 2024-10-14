@@ -25,7 +25,6 @@ export default function DashboardComponent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Pagination States for each table
   const [currentActiveTodayPage, setCurrentActiveTodayPage] = useState(1);
   const [currentFinishedPage, setCurrentFinishedPage] = useState(1);
   const itemsPerPage = 10;
@@ -281,7 +280,7 @@ export default function DashboardComponent() {
                 ))}
               </tbody>
             </table>
-            {/* Pagination for Active Today */}
+
             {totalActiveTodayPages > 1 && (
               <div className="flex justify-center my-2">
                 {Array.from({ length: totalActiveTodayPages }, (_, index) => (
@@ -386,12 +385,6 @@ export default function DashboardComponent() {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    <td
-                      className="py-2 px-4 border-b text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                      onClick={() => handleDelete(ticket.ticket_id)}
-                    >
-                      ลบ
-                    </td>
                   </tr>
                 ))}
               </tbody>

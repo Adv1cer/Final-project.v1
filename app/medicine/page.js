@@ -10,7 +10,6 @@ function Medicine() {
     return (
         <main>
             <MedicineComponent />
-            <Footer />
         </main>
     );
 }
