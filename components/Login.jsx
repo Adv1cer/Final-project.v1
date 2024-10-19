@@ -68,9 +68,9 @@ export default function LoginForm() {
 
     return (
         <main className="flex items-center justify-center min-h-screen bg-custom">
-            <div className="bg-white px-16 py-8 rounded-lg shadow-md mb-8">
+            <div className="bg-white px-16 py-8  shadow-md mb-8 form-border">
                 <form onSubmit={handleSubmit}>
-                    <div className="space-y-10">
+                    <div className="space-y-6">
                         <div className="flex items-center justify-center w-80">
                             <div className="text-center">
                                 <h3 className="text-3xl font-mono">
@@ -78,7 +78,7 @@ export default function LoginForm() {
                                 </h3>
                             </div>
                         </div>
-                        <div className="w-full">
+                        <div className="w-full ">
                             <label className="block text-gray-700 font-mono">
                                 Email
                             </label>
@@ -87,7 +87,7 @@ export default function LoginForm() {
                                 id="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md pl-4"
+                                className="mt-1 block w-full p-2 border border-gray-300 input-border pl-4"
                                 placeholder="อีเมล์"
                             />
                         </div>
@@ -100,7 +100,7 @@ export default function LoginForm() {
                                 id="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md pl-4"
+                                className="mt-1 block w-full p-2 border border-gray-300 input-border pl-4"
                                 placeholder="พาสเวิร์ด"
                             />
                         </div>

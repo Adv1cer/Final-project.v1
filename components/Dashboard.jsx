@@ -101,7 +101,9 @@ export default function DashboardComponent() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">Loading...</div>
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
     );
   }
 
@@ -192,92 +194,132 @@ export default function DashboardComponent() {
             <table className="min-w-full bg-white">
               <thead>
                 <tr>
-                  <th className="py-2 px-4 border-b">ชื่อ-นามสกุล</th>
-                  <th className="py-2 px-4 border-b">รหัสนักศึกษา</th>
-                  <th className="py-2 px-4 border-b">วันที่และเวลา</th>
-                  <th className="py-2 px-4 border-b">ดำเนินการ</th>
+                  <th className="py-2 px-4 border-b text-center">
+                    ชื่อ-นามสกุล
+                  </th>
+                  <th className="py-2 px-4 border-b text-center">
+                    รหัสนักศึกษา
+                  </th>
+                  <th className="py-2 px-4 border-b text-center">
+                    วันที่และเวลา
+                  </th>
+                  <th className="py-2 px-4 border-b text-center">ดำเนินการ</th>
                 </tr>
               </thead>
               <tbody>
-                {currentActiveTodayTickets.map((ticket) => (
-                  <tr
-                    key={ticket.ticket_id}
-                    className="border bg-blue-100 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg"
-                  >
-                    <td className="py-2 px-4 border-b">
-                      {ticket.student_name}
-                    </td>
-                    <td className="py-2 px-4 border-b">{ticket.student_id}</td>
-                    <td className="py-2 px-4 border-b">
-                      {new Date(ticket.datetime).toLocaleString()}
-                    </td>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <td className="py-2 px-4 border-b text-blue-700 cursor-pointer">
-                          สั่งยา
-                        </td>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>Patient Ticket</DialogTitle>
-                          <DialogDescription>Status: Active</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-2 py-1">
-                          <h3 className="ml-10">
-                            Name: {ticket.student_name}
-                          </h3>
-                          <h3 className="ml-10">
-                            Student ID: {ticket.student_id}
-                          </h3>
-                          <h3 className="ml-10">
-                            Check-in Time:{" "}
-                            {new Date(ticket.datetime).toLocaleString()}
-                          </h3>
-                          <br />
-                          <h3 className="ml-10">Patient Symptoms</h3>
-                          {ticket.symptom_names ? (
-                            <div className="ml-10 space-y-2">
-                              {ticket.symptom_names
-                                .split(",")
-                                .map((symptom, index) => (
-                                  <p key={index} className="block">
-                                    {symptom.trim()}
-                                  </p>
-                                ))}
-                            </div>
-                          ) : (
-                            <p className="ml-10">No symptoms recorded</p>
-                          )}
-                          {ticket.other_symptom && (
-                            <div className="ml-10 mt-2">
-                              <h3>Other Symptoms:</h3>
-                              <p>{ticket.other_symptom}</p>
-                            </div>
-                          )}
-                        </div>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button type="button" variant="secondary">
-                              Close
-                            </Button>
-                          </DialogClose>
-                          <Button
-                            type="button"
-                            onClick={() => handleTicket(ticket)}
-                          >
-                            สั่งยา
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <td
-                      className="py-2 px-4 border-b text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                      onClick={() => handleDelete(ticket.ticket_id)}
+                {currentActiveTodayTickets.length > 0 ? (
+                  currentActiveTodayTickets.map((ticket) => (
+                    <tr
+                      key={ticket.ticket_id}
+                      className="border bg-blue-100 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg"
                     >
-                      ลบ
+                      <td className="py-2 px-4 border-b text-center">
+                        {ticket.student_name}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {ticket.student_id}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {new Date(ticket.datetime).toLocaleString()}
+                      </td>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <td className="py-2 px-4 border-b text-blue-700 cursor-pointer text-center">
+                            สั่งยา
+                          </td>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Patient Ticket</DialogTitle>
+                            <DialogDescription>
+                              Status: Active
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-2 py-1">
+                            <h3 className="ml-10">
+                              Name: {ticket.student_name}
+                            </h3>
+                            <h3 className="ml-10">
+                              Student ID: {ticket.student_id}
+                            </h3>
+                            <h3 className="ml-10">
+                              Check-in Time:{" "}
+                              {new Date(ticket.datetime).toLocaleString()}
+                            </h3>
+                            <br />
+                            <h3 className="ml-10">Patient Symptoms</h3>
+                            {ticket.symptom_names ? (
+                              <div className="ml-10 space-y-2">
+                                {ticket.symptom_names
+                                  .split(",")
+                                  .map((symptom, index) => (
+                                    <p key={index} className="block">
+                                      {symptom.trim()}
+                                    </p>
+                                  ))}
+                              </div>
+                            ) : (
+                              <p className="ml-10">No symptoms recorded</p>
+                            )}
+                            {ticket.other_symptom && (
+                              <div className="ml-10 mt-2">
+                                <h3>Other Symptoms:</h3>
+                                <p>{ticket.other_symptom}</p>
+                              </div>
+                            )}
+                            {ticket.pill_quantities && (
+                              <div className="ml-10 mt-2">
+                                <h3>Pill Records:</h3>
+                                <div className="space-y-2">
+                                  {ticket.pill_quantities
+                                    .split(",")
+                                    .map((quantity, index) => (
+                                      <p key={index} className="block">
+                                        Pill Name:{" "}
+                                        {ticket.pill_names
+                                          ? ticket.pill_names.split(",")[index]
+                                          : "Unknown"}
+                                        , Pill Stock ID:{" "}
+                                        {ticket.pillstock_ids
+                                          ? ticket.pillstock_ids.split(",")[index]
+                                          : "Unknown"}
+                                        , Quantity: {quantity.trim()}
+                                      </p>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button type="button" variant="secondary">
+                                Close
+                              </Button>
+                            </DialogClose>
+                            <Button
+                              type="button"
+                              onClick={() => handleTicket(ticket)}
+                            >
+                              สั่งยา
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <td
+                        className="py-2 px-4 border-b text-red-500 cursor-pointer hover:text-red-700 transition-colors text-center"
+                        onClick={() => handleDelete(ticket.ticket_id)}
+                      >
+                        ลบ
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center py-4">
+                      No patient listed currently.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
 
@@ -289,8 +331,8 @@ export default function DashboardComponent() {
                     onClick={() => handleActiveTodayPageChange(index + 1)}
                     className={`mx-1 px-3 py-1 rounded ${
                       currentActiveTodayPage === index + 1
-                          ? "bg-blue-500 text-white hover:bg-blue-700"
-                          : "bg-gray-300 hover:bg-gray-500"
+                        ? "bg-blue-500 text-white hover:bg-blue-700"
+                        : "bg-gray-300 hover:bg-gray-500"
                     }`}
                   >
                     {index + 1}
@@ -307,86 +349,126 @@ export default function DashboardComponent() {
             <table className="min-w-full bg-white">
               <thead>
                 <tr>
-                  <th className="py-2 px-4 border-b">ชื่อ-นามสกุล</th>
-                  <th className="py-2 px-4 border-b">รหัสนักศึกษา</th>
-                  <th className="py-2 px-4 border-b">วันที่และเวลา</th>
-                  <th className="py-2 px-4 border-b">ดำเนินการ</th>
+                  <th className="py-2 px-4 border-b text-center">
+                    ชื่อ-นามสกุล
+                  </th>
+                  <th className="py-2 px-4 border-b text-center">
+                    รหัสนักศึกษา
+                  </th>
+                  <th className="py-2 px-4 border-b text-center">
+                    วันที่และเวลา
+                  </th>
+                  <th className="py-2 px-4 border-b text-center">ดำเนินการ</th>
                 </tr>
               </thead>
               <tbody>
-                {currentFinishedTickets.map((ticket) => (
-                  <tr
-                    key={ticket.ticket_id}
-                    className="border bg-green-100 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg"
-                  >
-                    <td className="py-2 px-4 border-b">
-                      {ticket.student_name}
-                    </td>
-                    <td className="py-2 px-4 border-b">{ticket.student_id}</td>
-                    <td className="py-2 px-4 border-b">
-                      {new Date(ticket.datetime).toLocaleString()}
-                    </td>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <td className="py-2 px-4 border-b text-blue-700 cursor-pointer">
-                          ดูข้อมูล
-                        </td>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>Patient Ticket</DialogTitle>
-                          <DialogDescription>Status: Finished</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-2 py-1">
-                          <h3 className="ml-10">
-                            Name: {ticket.student_name}
-                          </h3>
-                          <h3 className="ml-10">
-                            Student ID: {ticket.student_id}
-                          </h3>
-                          <h3 className="ml-10">
-                            Check-in Time:{" "}
-                            {new Date(ticket.datetime).toLocaleString()}
-                          </h3>
-                          <br />
-                          <h3 className="ml-10">Patient Symptoms</h3>
-                          {ticket.symptom_names ? (
-                            <div className="ml-10 space-y-2">
-                              {ticket.symptom_names
-                                .split(",")
-                                .map((symptom, index) => (
-                                  <p key={index} className="block">
-                                    {symptom.trim()}
-                                  </p>
-                                ))}
-                            </div>
-                          ) : (
-                            <p className="ml-10">No symptoms recorded</p>
-                          )}
-                          {ticket.other_symptom && (
-                            <div className="ml-10 mt-2">
-                              <h3>Other Symptoms:</h3>
-                              <p>{ticket.other_symptom}</p>
-                            </div>
-                          )}
-                        </div>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button type="button" variant="secondary">
-                              Close
-                            </Button>
-                          </DialogClose>
-                          <Button
-                            type="button"
-                            onClick={() => handleTicket(ticket)}
-                          >
+                {currentFinishedTickets.length > 0 ? (
+                  currentFinishedTickets.map((ticket) => (
+                    <tr
+                      key={ticket.ticket_id}
+                      className="border bg-green-100 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg"
+                    >
+                      <td className="py-2 px-4 border-b text-center">
+                        {ticket.student_name}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {ticket.student_id}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {new Date(ticket.datetime).toLocaleString()}
+                      </td>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <td className="py-2 px-4 border-b text-blue-700 cursor-pointer text-center">
                             ดูข้อมูล
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                          </td>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Patient Ticket</DialogTitle>
+                            <DialogDescription>
+                              Status: Finished
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-2 py-1">
+                            <h3 className="ml-10">
+                              Name: {ticket.student_name}
+                            </h3>
+                            <h3 className="ml-10">
+                              Student ID: {ticket.student_id}
+                            </h3>
+                            <h3 className="ml-10">
+                              Check-in Time:{" "}
+                              {new Date(ticket.datetime).toLocaleString()}
+                            </h3>
+                            <br />
+                            <h3 className="ml-10">Patient Symptoms</h3>
+                            {ticket.symptom_names ? (
+                              <div className="ml-10 space-y-2">
+                                {ticket.symptom_names
+                                  .split(",")
+                                  .map((symptom, index) => (
+                                    <p key={index} className="block">
+                                      {symptom.trim()}
+                                    </p>
+                                  ))}
+                              </div>
+                            ) : (
+                              <p className="ml-10">No symptoms recorded</p>
+                            )}
+                            {ticket.other_symptom && (
+                              <div className="ml-10 mt-2">
+                                <h3>Other Symptoms:</h3>
+                                <p>{ticket.other_symptom}</p>
+                              </div>
+                            )}
+                            {ticket.pill_quantities && (
+                              <div className="ml-10 mt-2">
+                                <h3>Pill Records:</h3>
+                                <div className="space-y-2">
+                                  {ticket.pill_quantities
+                                    .split(",")
+                                    .map((quantity, index) => (
+                                      <p key={index} className="block">
+                                        Pill Name:{" "}
+                                        {ticket.pill_names
+                                          ? ticket.pill_names.split(",")[index]
+                                          : "Unknown"}
+                                        , Pill Stock ID:{" "}
+                                        {ticket.pillstock_ids
+                                          ? ticket.pillstock_ids.split(",")[index]
+                                          : "Unknown"}
+                                        , Quantity: {quantity.trim()}
+                                      </p>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button type="button" variant="secondary">
+                                Close
+                              </Button>
+                            </DialogClose>
+                            <Button
+                              type="button"
+                              onClick={() => handleTicket(ticket)}
+                            >
+                              ดูข้อมูล
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center py-4">
+                      No patient listed currently.
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
             {totalFinishedPages > 1 && (
@@ -397,8 +479,8 @@ export default function DashboardComponent() {
                     onClick={() => handleFinishedPageChange(index + 1)}
                     className={`mx-1 px-3 py-1 rounded ${
                       currentFinishedPage === index + 1
-                          ? "bg-blue-500 text-white hover:bg-blue-700"
-                          : "bg-gray-300 hover:bg-gray-500"
+                        ? "bg-blue-500 text-white hover:bg-blue-700"
+                        : "bg-gray-300 hover:bg-gray-500"
                     }`}
                   >
                     {index + 1}

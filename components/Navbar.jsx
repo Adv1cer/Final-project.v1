@@ -38,8 +38,10 @@ function Navbar({ session }) {
                         ) : (
                             <li>
                                 <Button
+                                variant="destructive"
                                     onClick={handleSignOut}
-                                    className="bg-red-500 text-white py-2 px-2 rounded-md text-lg my-2">
+                                     
+                                    className=" ">
                                     Logout
                                 </Button>
                             </li>

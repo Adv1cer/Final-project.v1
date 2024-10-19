@@ -274,7 +274,7 @@ export default function TicketPage() {
                                         </tbody>
                                     </table>
                                     <div className="flex justify-end mt-4 mx-80">
-                                        <Button variant="outline" onClick={handleSubmit}>Submit</Button>
+                                        <Button onClick={handleSubmit}>Submit</Button>
                                     </div>
                                 </div>
                             </div>
@@ -284,4 +284,4 @@ export default function TicketPage() {
             </div>
         </main>
     );
-}
+} 

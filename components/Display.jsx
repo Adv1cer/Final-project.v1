@@ -53,7 +53,7 @@ function Display() {
   return (
     <div className="flex justify-center bg-gray-100">
       <div className="flex space-x-4 gap-6">
-        <div className="bg-white py-5 my-4 shadow-md rounded-lg p-8 pb-2 w-full flex flex-col items-center">
+        <div className="bg-white py-5 my-4 shadow-md display-border p-8 pb-2 w-full flex flex-col items-center ">
           <div className="flex-1 text-center">
             <h3 className="text-xl whitespace-nowrap">รอการจ่ายยา</h3>
             <div className="text-4xl mt-2">
@@ -61,7 +61,7 @@ function Display() {
             </div>
           </div>
         </div>
-        <div className="bg-white my-4 py-5 shadow-md rounded-lg p-8 pb-2 w-full flex flex-col items-center">
+        <div className="bg-white my-4 py-5 shadow-md display-border p-8 pb-2 w-full flex flex-col items-center">
           <div className="flex-1 text-center">
             <h3 className="text-xl whitespace-nowrap">ผู้ป่วยวันนี้</h3>
           </div>
@@ -69,7 +69,7 @@ function Display() {
             {error ? <span className="text-red-500">{error}</span> : totalToday}
           </div>
         </div>
-        <div className="bg-white my-4 py-5 shadow-md rounded-lg p-8 pb-2 w-full flex flex-col items-center">
+        <div className="bg-white my-4 py-5 shadow-md display-border p-8 pb-2 w-full flex flex-col items-center">
           <div className="flex-1 text-center">
             <h3 className="text-xl whitespace-nowrap">ผู้ป่วยในเดือนนี้</h3>
           </div>
