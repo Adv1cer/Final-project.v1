@@ -281,7 +281,9 @@ export default function DashboardComponent() {
                                           : "Unknown"}
                                         , Pill Stock ID:{" "}
                                         {ticket.pillstock_ids
-                                          ? ticket.pillstock_ids.split(",")[index]
+                                          ? ticket.pillstock_ids.split(",")[
+                                              index
+                                            ]
                                           : "Unknown"}
                                         , Quantity: {quantity.trim()}
                                       </p>
@@ -429,17 +431,25 @@ export default function DashboardComponent() {
                                   {ticket.pill_quantities
                                     .split(",")
                                     .map((quantity, index) => (
-                                      <p key={index} className="block">
-                                        Pill Name:{" "}
-                                        {ticket.pill_names
-                                          ? ticket.pill_names.split(",")[index]
-                                          : "Unknown"}
-                                        , Pill Stock ID:{" "}
-                                        {ticket.pillstock_ids
-                                          ? ticket.pillstock_ids.split(",")[index]
-                                          : "Unknown"}
-                                        , Quantity: {quantity.trim()}
-                                      </p>
+                                      <div key={index} className="block">
+                                        <p>
+                                          Pill Name:{" "}
+                                          {ticket.pill_names
+                                            ? ticket.pill_names.split(",")[
+                                                index
+                                              ]
+                                            : "Unknown"}
+                                        </p>
+                                        <p>
+                                          Pill Stock ID:{" "}
+                                          {ticket.pillstock_ids
+                                            ? ticket.pillstock_ids.split(",")[
+                                                index
+                                              ]
+                                            : "Unknown"}
+                                        </p>
+                                        <p>Quantity: {quantity.trim()}</p>
+                                      </div>
                                     ))}
                                 </div>
                               </div>

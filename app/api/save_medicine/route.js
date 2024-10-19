@@ -1,44 +1,50 @@
+import mysql from "mysql2/promise";
 
-import mysql from 'mysql2/promise';
+export async function POST(req) {
+  const { pillName, dose, typeName, expireDate, total, unit } = await req.json();
 
-export async function POST(request) {
-    const { pillName, dose, typeName, expireDate, total, unit, checkboxes } = await request.json();
-    let connection;
+  const connection = await mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+  });
 
-    try {
-        connection = await mysql.createConnection({
-            host: process.env.MYSQL_HOST,
-            user: process.env.MYSQL_USER,
-            password: process.env.MYSQL_PASSWORD,
-            database: process.env.MYSQL_DATABASE,
-        });
+  await connection.beginTransaction();
 
-        await connection.beginTransaction(); 
+  try {
+    // Check if the pill already exists
+    const [existingPill] = await connection.execute(
+      'SELECT pill_id FROM pill WHERE pill_name = ?',
+      [pillName]
+    );
 
+    let pillId;
 
-        const [pillResult] = await connection.execute(
-            'INSERT INTO pill (pill_name, dose, type_id) VALUES (?, ?, ?)',
-            [pillName, dose, typeName]
-        );
-
-        const pillId = pillResult.insertId;
-
-
-        await connection.execute(
-            'INSERT INTO pillstock (pill_id, expire, total, unit_id) VALUES (?, ?, ?, ?)',
-            [pillId, expireDate, total, unit]
-        );
-
-
-        await connection.commit(); 
-        return new Response(JSON.stringify({ message: 'Data saved successfully' }), { status: 200 });
-    } catch (err) {
-        console.error('Error saving data:', err);
-        if (connection) await connection.rollback(); 
-        return new Response('Server error', { status: 500 });
-    } finally {
-        if (connection && connection.end) {
-            await connection.end();
-        }
+    if (existingPill.length > 0) {
+      // Pill already exists, use the existing pill_id
+      pillId = existingPill[0].pill_id;
+    } else {
+      // Pill does not exist, insert a new record
+      const [pillResult] = await connection.execute(
+        'INSERT INTO pill (pill_name, dose, type_id) VALUES (?, ?, ?)',
+        [pillName, dose, typeName]
+      );
+      pillId = pillResult.insertId;
     }
+
+    // Insert into pillstock table
+    await connection.execute(
+      'INSERT INTO pillstock (pill_id, expire, total, unit_id) VALUES (?, ?, ?, ?)',
+      [pillId, expireDate, total, unit]
+    );
+
+    await connection.commit();
+    return new Response(JSON.stringify({ message: 'Data saved successfully' }), { status: 200 });
+  } catch (err) {
+    await connection.rollback();
+    return new Response(JSON.stringify({ error: 'Failed to save data' }), { status: 500 });
+  } finally {
+    await connection.end();
+  }
 }
