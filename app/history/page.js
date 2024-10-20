@@ -13,7 +13,6 @@ function History() {
     <main>
       <Navbar session={session} />
       <HistoryComponent />
-      <Footer />
     </main>
   );
 }

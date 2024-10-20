@@ -1,3 +1,4 @@
+// pages/api/report.js
 import { NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
 
@@ -21,7 +22,7 @@ export async function GET() {
 
     // Get the start of the week (last Sunday)
     const today = new Date();
-    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay())); 
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
 
     // Query to get statistics of symptom_id for the current week
     const [symptomStats] = await connection.query(`
@@ -48,11 +49,34 @@ export async function GET() {
       LIMIT 3
     `, [startOfWeek]);
 
+    // New Query: Get ticket counts per hour from 5 AM to 7 PM for the current day
+    const startTime = new Date(today.setHours(5, 0, 0, 0));  // 5 AM
+    const endTime = new Date(today.setHours(19, 0, 0, 0));   // 7 PM
 
+    const [ticketCounts] = await connection.query(`
+      SELECT HOUR(datetime) AS hour, COUNT(*) AS ticket_count
+      FROM ticket
+      WHERE datetime BETWEEN ? AND ?
+      GROUP BY HOUR(datetime)
+      ORDER BY hour
+    `, [startTime, endTime]);
+
+    // Format the result for the chart (ensuring all hours are represented)
+    const chartData = Array.from({ length: 15 }, (_, i) => {
+      const hour = i + 5; // Start from 5 AM (index 0 = 5 AM)
+      const row = ticketCounts.find(r => r.hour === hour);
+      return {
+        hour: `${hour}:00`,
+        ticket_count: row ? row.ticket_count : 0,
+      };
+    });
+
+    // Returning all the data, including the new chart data
     return NextResponse.json({
       tickets,
       symptomStats,
       pillStats,
+      chartData,  // Include the chartData in the final response
     });
   } catch (error) {
     console.error('Error fetching data:', error);
