@@ -1,10 +1,25 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+
+const options = [
+  { value: 1, label: "ปวดหัวเป็นไข้" },
+  { value: 2, label: "ปวดท้อง" },
+  { value: 3, label: "ท้องเสีย" },
+  { value: 4, label: "ปวดรอบเดือน" },
+  { value: 5, label: "เป็นหวัด" },
+  { value: 6, label: "ปวดฟัน" },
+  { value: 7, label: "เป็นแผล" },
+  { value: 8, label: "เป็นลม" },
+  { value: 9, label: "ตาเจ็บ" },
+  { value: 10, label: "ผื่นคัน" },
+  { value: 11, label: "นอนพัก" },
+  { value: 12, label: "อื่นๆ" },
+];
 
 export default function PatientForm() {
   const { data: session, status } = useSession();
@@ -20,25 +35,22 @@ export default function PatientForm() {
       router.push("/dashboard");
     }
   }, [session, status, router]);
-
-  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
   const [studentId, setStudentId] = useState("");
   const [studentName, setStudentName] = useState("");
+  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [otherSymptom, setOtherSymptom] = useState("");
-  const [isOtherChecked, setIsOtherChecked] = useState(false);
+  const [role, setRole] = useState("");
 
-  const handleCheckboxChange = (event) => {
-    const id = event.target.id;
-    if (id === "12") {
-      setIsOtherChecked(event.target.checked);
-    }
+  const handleSymptomChange = (selectedOptions) => {
+    setSelectedSymptoms(selectedOptions.map((option) => option.value));
+  };
 
-    if (event.target.checked) {
-      setSelectedSymptoms((prevSelected) => [...prevSelected, id]);
-    } else {
-      setSelectedSymptoms((prevSelected) =>
-        prevSelected.filter((symptomId) => symptomId !== id)
-      );
+  const handleRoleChange = (event) => {
+    const selectedRole = event.target.value;
+    setRole(selectedRole);
+    if (selectedRole === "outsider") {
+      setStudentId("");
     }
   };
 
@@ -69,8 +81,9 @@ export default function PatientForm() {
             ยืนยันข้อมูล:
             ชื่อ-นามสกุล: ${studentName}
             รหัสนักศึกษา: ${studentId}
+            สถานะ: ${role}
             อาการ: ${selectedSymptomLabels}
-            ${isOtherChecked ? `หมายเหต: ${otherSymptom}` : ""}
+            ${selectedSymptoms.includes(12) ? `หมายเหต: ${otherSymptom}` : ""}
         `;
 
     const confirmed = window.confirm(confirmMessage);
@@ -79,7 +92,7 @@ export default function PatientForm() {
       return;
     }
 
-    if (!studentId || !studentName || selectedSymptoms.length === 0) {
+    if (!studentId && role !== "outsider" || !studentName || !role || selectedSymptoms.length === 0) {
       toast({
         variant: "destructive",
         title: "Submission Failed",
@@ -93,8 +106,9 @@ export default function PatientForm() {
     const formData = {
       student_id: studentId,
       student_name: studentName,
+      role: role,
       symptom_ids: selectedSymptoms,
-      other_symptom: isOtherChecked ? otherSymptom : "",
+      other_symptom: selectedSymptoms.includes(12) ? otherSymptom : "",
     };
 
     try {
@@ -107,15 +121,30 @@ export default function PatientForm() {
       });
 
       if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Data Submitted",
-          description: `รหัสนักศึกษา ${studentId} ชื่อ-นามสกุล ${studentName} อาการ ${selectedSymptomLabels} ${
-            isOtherChecked ? ` ${otherSymptom}` : ""
-          }`,
-          duration: 2000,
-        });
-        console.log(formData);
+          if (role === "outsider"){
+            toast({
+              variant: "success",
+              title: "Data Submitted",
+              description: `ชื่อ-นามสกุล ${studentName} 
+                            ตำแหน่ง ${role} 
+                            อาการ ${selectedSymptomLabels} ${
+                selectedSymptoms.includes(12) ? ` ${otherSymptom}` : ""
+              }`,
+              duration: 2000,
+            });
+          }else {
+            toast({
+              variant: "success",
+              title: "Data Submitted",
+              description: `รหัสนักศึกษา ${studentId} 
+                            ชื่อ-นามสกุล ${studentName} 
+                            ตำแหน่ง ${role} 
+                            อาการ ${selectedSymptomLabels} ${
+                selectedSymptoms.includes(12) ? ` ${otherSymptom}` : ""
+              }`,
+              duration: 2000,
+            });
+          }
       } else {
         console.log("Failed to submit data");
       }
@@ -123,6 +152,11 @@ export default function PatientForm() {
       console.error("Error submitting data:", error);
     }
   };
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null; 
   return (
     <div>
       <div className="flex justify-center items-center min-h-screen bg-custom">
@@ -136,61 +170,76 @@ export default function PatientForm() {
                 ชื่อ-นามสกุล
               </label>
               <input
-  type="text"
-  id="student_name"
-  value={studentName}
-  onChange={(e) => setStudentName(e.target.value)}
-  className="mt-1 block w-full p-2 border border-black input-border pl-4"
-  placeholder="ชื่อ-นามสกุล"
-  style={{ borderColor: 'black' }}
-/>
+                type="text"
+                id="student_name"
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                className="mt-1 block w-full p-2 border border-black input-border pl-4"
+                placeholder="ชื่อ-นามสกุล"
+                style={{ borderColor: "black" }}
+              />
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-center font-bold text-lg">
-                เลขนักศึกษา
-              </label>
-              <input
-    type="text"
-    id="student_id"
-    value={studentId}
-    onChange={(e) => setStudentId(e.target.value)}
-    className="mt-1 block w-full p-2 border border-black input-border pl-4"
-    placeholder="เลขนักศึกษา"
-    style={{ borderColor: 'black' }}
-  />
+            <div className="flex gap-1 my-5">
+              <div>
+                <input
+                  type="radio"
+                  id="student"
+                  name="นักศึกษา"
+                  value="นักศึกษา"
+                  onChange={handleRoleChange}
+                />
+                <label htmlFor="student"> นักศึกษา</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="staff"
+                  name="บุคลากร"
+                  value="บุคลากร"
+                  onChange={handleRoleChange}
+                />
+                <label htmlFor="staff"> บุคลากรมหาลัย</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="outsider"
+                  name="บุคคลภายนอก"
+                  value="บุคคลภายนอก"
+                  onChange={handleRoleChange}
+                />
+                <label htmlFor="outsider"> บุคคลภายนอก</label>
+              </div>
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-center font-bold text-lg">
+            {role !== "outsider" && (
+              <div className="mb-4">
+                <label className="block text-gray-700 text-center font-bold text-lg">
+                  เลขนักศึกษา
+                </label>
+                <input
+                  type="text"
+                  id="student_id"
+                  value={studentId}
+                  onChange={(e) => setStudentId(e.target.value)}
+                  className="mt-1 block w-full p-2 border border-black input-border pl-4"
+                  placeholder="เลขนักศึกษา"
+                  style={{ borderColor: "black" }}
+                />
+              </div>
+            )}
+            <div className="flex w-full flex-col gap-1 ">
+              <label className="block  text-center font-bold text-lg">
                 อาการ
               </label>
-              <div className="mt-2 grid grid-cols-4 gap-4 whitespace-nowrap">
-                {[
-                  { label: "ปวดหัวเป็นไข้", id: "1" },
-                  { label: "ปวดท้อง", id: "2" },
-                  { label: "ท้องเสีย", id: "3" },
-                  { label: "ปวดรอบเดือน", id: "4" },
-                  { label: "เป็นหวัด", id: "5" },
-                  { label: "ปวดฟัน", id: "6" },
-                  { label: "เป็นแผล", id: "7" },
-                  { label: "เป็นลม", id: "8" },
-                  { label: "ตาเจ็บ", id: "9" },
-                  { label: "ผื่นคัน", id: "10" },
-                  { label: "นอนพัก", id: "11" },
-                  { label: "อื่นๆ", id: "12" },
-                ].map((item) => (
-                  <div key={item.id}>
-                    <input
-                      type="checkbox"
-                      id={item.id}
-                      onChange={handleCheckboxChange}
-                    />
-                    <label htmlFor={item.id} className="ml-2 text-gray-700">
-                      {item.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-              {isOtherChecked && (
+              <Select
+                className=" text-gray-500 text-sm"
+                options={options}
+                placeholder="เลือกอาการของคุณ"
+                noOptionsMessage={() => "no results found"}
+                onChange={handleSymptomChange}
+                isMulti
+              />
+              {selectedSymptoms.includes(12) && (
                 <div className="mt-4">
                   <label className="block text-gray-700 font-bold text-lg">
                     โปรดระบุอาการอื่นๆ
@@ -199,13 +248,13 @@ export default function PatientForm() {
                     type="text"
                     value={otherSymptom}
                     onChange={(e) => setOtherSymptom(e.target.value)}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    className="mt-1 block w-full p-2 border border-black input-border pl-4"
                     placeholder="ระบุอาการอื่นๆ"
                   />
                 </div>
               )}
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-4">
               <Button className="bg-blue-700 hover:bg-blue-400" type="submit">
                 ยืนยัน
               </Button>

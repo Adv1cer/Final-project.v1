@@ -26,7 +26,7 @@ export async function POST(req) {
 
       // Insert into pillrecord table
       await connection.execute(
-        'INSERT INTO pillrecord (ticket_id, pillstock_id, quantity) VALUES (?, ?, ?)',
+        'INSERT INTO pillrecord (patientrecord_id, pillstock_id, quantity) VALUES (?, ?, ?)',
         [ticket_id, pillstock_id, quantity]
       );
 
@@ -39,7 +39,7 @@ export async function POST(req) {
 
     // Update the ticket status
     await connection.execute(
-      'UPDATE ticket SET status = 0 WHERE ticket_id = ?',
+      'UPDATE patientrecord SET status = 0 WHERE patientrecord_id = ?',
       [ticket_id]
     );
 

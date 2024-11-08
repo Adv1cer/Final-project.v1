@@ -1,6 +1,6 @@
-import mysql from "mysql2/promise";
+import mysql from 'mysql2/promise';
 
-export async function GET(req) {
+export default async function handler(req, res) {
   const db = await mysql.createConnection({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,

@@ -34,7 +34,7 @@ const toastVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
 
 const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {

@@ -34,7 +34,7 @@ const authOption = {
           if (rows.length > 0) {
             const user = rows[0];
 
-            console.log("User found:", user);
+            console.log("User found:");
 
             if (user.password === password) {
 

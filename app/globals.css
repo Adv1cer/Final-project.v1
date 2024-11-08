@@ -85,6 +85,13 @@
     border-radius: 10px;
   }
 
+  .destructive {
+    border-color: red;
+    background-color: red !important; /* This would override the color defined in toast.jsx */
+    color:#fff;
+    border-radius: 10px;
+  }
+
   .wave {
     position: absolute;
     width: 100%;

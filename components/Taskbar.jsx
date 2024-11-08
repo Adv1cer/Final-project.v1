@@ -25,7 +25,7 @@ export default function Taskbar() {
           className={`${
             currentRoute === "/dashboard" ? "bg-blue-400 text-white" : ""
           } transition-colors`}
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push("/homepage")}
         >
           หนัาหลัก
         </Button>
@@ -43,9 +43,9 @@ export default function Taskbar() {
           className={`${
             currentRoute === "/history" ? "bg-blue-400 text-white" : ""
           } transition-colors`}
-          onClick={() => router.push("/history")}
+          onClick={() => router.push("/dashboard")}
         >
-          ประวัติ
+          แดชบอร์ด
         </Button>
       </div>
     </div>

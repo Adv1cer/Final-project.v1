@@ -15,68 +15,77 @@ export async function GET() {
   try {
     connection = await mysql.createConnection(dbConfig);
 
-    // Query to get all tickets
-    const [tickets] = await connection.query(`
-      SELECT * FROM ticket
+    const [patientRecords] = await connection.query(`
+      SELECT * FROM patientrecord
     `);
 
-    // Get the start of the week (last Sunday)
     const today = new Date();
     const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
 
-    // Query to get statistics of symptom_id for the current week
     const [symptomStats] = await connection.query(`
       SELECT sr.symptom_id, COUNT(*) as count, s.symptom_name
       FROM symptomrecord sr
       JOIN symptom s ON sr.symptom_id = s.symptom_id
-      JOIN ticket t ON sr.ticket_id = t.ticket_id
-      WHERE t.datetime >= ?
+      JOIN patientrecord pr ON sr.patientrecord_id = pr.patientrecord_id
+      WHERE pr.datetime >= ?
       GROUP BY sr.symptom_id
       ORDER BY count DESC
-      LIMIT 3
+      LIMIT 12
     `, [startOfWeek]);
 
-    // Query to get statistics of pillstock_id for the current week, including pill names
     const [pillStats] = await connection.query(`
       SELECT ps.pillstock_id, COUNT(pr.pillstock_id) as count, p.pill_name
       FROM pillrecord pr
-      JOIN ticket t ON pr.ticket_id = t.ticket_id
+      JOIN patientrecord prd ON pr.patientrecord_id = prd.patientrecord_id
       JOIN pillstock ps ON pr.pillstock_id = ps.pillstock_id
       JOIN pill p ON ps.pill_id = p.pill_id
-      WHERE t.datetime >= ?
+      WHERE prd.datetime >= ? AND prd.datetime < ?
       GROUP BY ps.pillstock_id, p.pill_name
       ORDER BY count DESC
-      LIMIT 3
-    `, [startOfWeek]);
+      LIMIT 10
+    `, [startOfMonth, endOfMonth]);
 
-    // New Query: Get ticket counts per hour from 5 AM to 7 PM for the current day
-    const startTime = new Date(today.setHours(5, 0, 0, 0));  // 5 AM
-    const endTime = new Date(today.setHours(19, 0, 0, 0));   // 7 PM
+    const todayDate = new Date();
+    const startTime = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), 5, 0, 0);
+    const endTime = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), 19, 0, 0);
 
-    const [ticketCounts] = await connection.query(`
-      SELECT HOUR(datetime) AS hour, COUNT(*) AS ticket_count
-      FROM ticket
+    const startTimeGMT7 = new Date(startTime.getTime() + (7 * 60 * 60 * 1000));
+    const endTimeGMT7 = new Date(endTime.getTime() + (7 * 60 * 60 * 1000));
+
+    console.log('startTimeGMT7:', startTime);
+    console.log('endTimeGMT7:', endTime);
+
+    const [rawPatientRecords] = await connection.query(`
+      SELECT *
+      FROM patientrecord
       WHERE datetime BETWEEN ? AND ?
+    `, [startTimeGMT7.toISOString().slice(0, 19).replace('T', ' '), endTimeGMT7.toISOString().slice(0, 19).replace('T', ' ')]);
+
+    const [patientRecordCounts] = await connection.query(`
+      SELECT HOUR(datetime) as hour, COUNT(*) as record_count
+      FROM patientrecord
+      WHERE datetime BETWEEN ? AND ?
+      AND HOUR(datetime) BETWEEN 6 AND 18
       GROUP BY HOUR(datetime)
       ORDER BY hour
-    `, [startTime, endTime]);
+    `, [startTimeGMT7.toISOString().slice(0, 19).replace('T', ' '), endTimeGMT7.toISOString().slice(0, 19).replace('T', ' ')]);
 
-    // Format the result for the chart (ensuring all hours are represented)
-    const chartData = Array.from({ length: 15 }, (_, i) => {
-      const hour = i + 5; // Start from 5 AM (index 0 = 5 AM)
-      const row = ticketCounts.find(r => r.hour === hour);
+    const chartData = Array.from({ length: 13 }, (_, i) => {
+      const hour = i + 6;
+      const row = patientRecordCounts.find(r => r.hour === hour);
       return {
         hour: `${hour}:00`,
-        ticket_count: row ? row.ticket_count : 0,
+        record_count: row ? row.record_count : 0,
       };
     });
 
-    // Returning all the data, including the new chart data
     return NextResponse.json({
-      tickets,
+      patientRecords,
       symptomStats,
       pillStats,
-      chartData,  // Include the chartData in the final response
+      chartData,
     });
   } catch (error) {
     console.error('Error fetching data:', error);

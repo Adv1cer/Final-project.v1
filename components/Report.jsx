@@ -1,9 +1,8 @@
+"use client";
 import { MantineProvider } from "@mantine/core";
-import { LineChart } from "@mantine/charts";
 import { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -17,12 +16,13 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-export const description = "A stacked area chart";
+} from "@/components/ui/chart"
+
+export const description = "A linear line chart";
 
 const chartConfig = {
   ticket_count: {
-    label: "Tickets",
+    label: "Ticket",
     color: "hsl(var(--chart-1))",
   },
 };
@@ -37,6 +37,23 @@ function Report() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartData, setChartData] = useState([]); // Added chartData state
+  const today = new Date();
+  const monthNamesThai = [
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
+  ];
+  const currentMonth = monthNamesThai[today.getMonth()];
+  const currentYear = today.getFullYear() + 543;
 
   const fetchData = async () => {
     setLoading(true);
@@ -49,6 +66,7 @@ function Report() {
       console.log("Fetched data:", data);
 
       const today = new Date();
+
       const startOfDay = new Date(
         today.getFullYear(),
         today.getMonth(),
@@ -73,33 +91,37 @@ function Report() {
       const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const startOfYear = new Date(today.getFullYear(), 0, 1);
 
-      const totalTodayTickets = data.tickets.filter((ticket) => {
-        const ticketDate = new Date(ticket.datetime);
-        return ticketDate >= startOfDay && ticketDate <= endOfDay;
-      }).length;
+      const totalTodayTickets =
+        data.patientRecords?.filter((ticket) => {
+          const ticketDate = new Date(ticket.datetime);
+          return ticketDate >= startOfDay && ticketDate <= endOfDay;
+        }).length || 0;
 
-      const totalWeekTickets = data.tickets.filter((ticket) => {
-        const ticketDate = new Date(ticket.datetime);
-        return ticketDate >= startOfWeek && ticketDate <= endOfDay;
-      }).length;
+      const totalWeekTickets =
+        data.patientRecords?.filter((ticket) => {
+          const ticketDate = new Date(ticket.datetime);
+          return ticketDate >= startOfWeek && ticketDate <= endOfDay;
+        }).length || 0;
 
-      const totalMonthTickets = data.tickets.filter((ticket) => {
-        const ticketDate = new Date(ticket.datetime);
-        return ticketDate >= startOfMonth && ticketDate <= endOfDay;
-      }).length;
+      const totalMonthTickets =
+        data.patientRecords?.filter((ticket) => {
+          const ticketDate = new Date(ticket.datetime);
+          return ticketDate >= startOfMonth && ticketDate <= endOfDay;
+        }).length || 0;
 
-      const totalYearTickets = data.tickets.filter((ticket) => {
-        const ticketDate = new Date(ticket.datetime);
-        return ticketDate >= startOfYear && ticketDate <= endOfDay;
-      }).length;
+      const totalYearTickets =
+        data.patientRecords?.filter((ticket) => {
+          const ticketDate = new Date(ticket.datetime);
+          return ticketDate >= startOfYear && ticketDate <= endOfDay;
+        }).length || 0;
 
       setTotalToday(totalTodayTickets);
       setTotalWeek(totalWeekTickets);
       setTotalMonth(totalMonthTickets);
       setTotalYear(totalYearTickets);
-      setSymptomStats(data.symptomStats);
-      setPillStats(data.pillStats);
-      setChartData(data.chartData); // Set chartData fetched from the backend
+      setSymptomStats(data.symptomStats || []);
+      setPillStats(data.pillStats || []);
+      setChartData(data.chartData || []); // Set chartData fetched from the backend
     } catch (err) {
       console.error("Error fetching data:", err);
       setError(err.message);
@@ -113,13 +135,22 @@ function Report() {
     fetchData();
   }, []);
 
+  // Sort and limit the symptomStats to get the top 10 symptoms
+  const topSymptoms = symptomStats
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  // Sort and limit the pillStats to get the top 10 pills
+  const topPills = pillStats.sort((a, b) => b.count - a.count).slice(0, 10);
+
   return (
     <MantineProvider>
-      <div className="flex justify-start">
-        <div className="grid grid-row-6 gap-6">
-          {/* รายวัน */}
-          <div className="bg-white py-2 my-2 shadow-md rounded-lg p-2 pb-2 flex flex-col items-center">
-            <h3 className="text-xl whitespace-nowrap">ผู้ใช้รายวัน</h3>
+      <div className="bg-gray-100">
+        <div className="flex gap-4 justify-center py-4 bg-gray-100">
+          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              ผู้ใช้รายวัน
+            </h3>
             <div className="text-2xl mt-4">
               {error ? (
                 <span className="text-red-500">{error}</span>
@@ -128,9 +159,10 @@ function Report() {
               )}
             </div>
           </div>
-          {/* รายสัปดาห์ */}
-          <div className="bg-white py-2 my-2 shadow-md rounded-lg p-2 pb-2 flex flex-col items-center">
-            <h3 className="text-xl whitespace-nowrap">ผู้ใช้รายสัปดาห์</h3>
+          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              ผู้ใช้รายสัปดาห์
+            </h3>
             <div className="text-2xl mt-4">
               {error ? (
                 <span className="text-red-500">{error}</span>
@@ -139,9 +171,10 @@ function Report() {
               )}
             </div>
           </div>
-          {/* รายเดือน */}
-          <div className="bg-white py-2 my-2 shadow-md rounded-lg p-2 pb-2 flex flex-col items-center">
-            <h3 className="text-xl whitespace-nowrap">ผู้ใช้รายเดือน</h3>
+          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              ผู้ใช้รายเดือน
+            </h3>
             <div className="text-2xl mt-4">
               {error ? (
                 <span className="text-red-500">{error}</span>
@@ -150,9 +183,10 @@ function Report() {
               )}
             </div>
           </div>
-          {/* รายปี */}
-          <div className="bg-white py-2 my-2 shadow-md rounded-lg p-2 pb-2 flex flex-col items-center">
-            <h3 className="text-xl whitespace-nowrap">ผู้ใช้รายปี</h3>
+          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              ผู้ใช้รายปี
+            </h3>
             <div className="text-2xl mt-4">
               {error ? (
                 <span className="text-red-500">{error}</span>
@@ -161,85 +195,101 @@ function Report() {
               )}
             </div>
           </div>
-          {/* สถิติอาการประจำสัปดาห์ */}
-          <div className="bg-white py-2 my-2 shadow-md rounded-lg p-2 pb-2 flex flex-col items-center">
-            <h3 className="text-xl whitespace-nowrap">
-              สถิติอาการประจำสัปดาห์
-            </h3>
-            <div className="text-lg mt-2">
-              {symptomStats.map((stat) => (
-                <div key={stat.symptom_id}>
-                  {stat.symptom_name}: {stat.count} คน
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* สถิติยาที่จ่ายไปประจำสัปดาห์ */}
-          <div className="bg-white py-2 my-2 shadow-md rounded-lg p-2 pb-2 flex flex-col items-center">
-            <h3 className="text-xl whitespace-nowrap">สถิติยาประจำสัปดาห์</h3>
-            <div className="text-lg mt-2">
-              {pillStats.map((stat) => (
-                <div key={stat.pillstock_id}>
-                  {stat.pill_name}: {stat.count} ครั้ง
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
-        <div className="flex w-full">
-          <Card className="w-full">
+
+        <div className="flex w-full mx-4 gap-4 py-6 bg-gray-100 justify-center pr-10">
+          <Card className= "h-80 w-1/3">
             <CardHeader>
-              <CardTitle>Area Chart</CardTitle>
-              <CardDescription>
-                Showing total visitors from 6AM-6PM
-              </CardDescription>
+              <CardTitle>Bar Chart - Label</CardTitle>
+              <CardDescription>January - June 2024</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig}>
-                <AreaChart
+                <BarChart
                   accessibilityLayer
-                  data={chartData} // Use the chartData state for the chart
+                  data={chartData}
                   margin={{
-                    left: 12,
-                    right: 12,
+                    top: 20,
                   }}
                 >
                   <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="hour"
+                    dataKey="month"
                     tickLine={false}
+                    tickMargin={10}
                     axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(value) => `${value}:00`}
+                    tickFormatter={(value) => value.slice(0, 3)}
                   />
                   <ChartTooltip
                     cursor={false}
-                    content={<ChartTooltipContent indicator="line" />}
+                    content={<ChartTooltipContent hideLabel />}
                   />
-                  <Area
-                    dataKey="ticket_count"
-                    type="natural"
-                    fill="var(--color-desktop)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-desktop)"
-                  />
-                </AreaChart>
+                  <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+                    <LabelList
+                      position="top"
+                      offset={12}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                  </Bar>
+                </BarChart>
               </ChartContainer>
             </CardContent>
-            <CardFooter>
-              <div className="flex w-full items-start gap-2 text-sm">
-                <div className="grid gap-2">
-                  <div className="flex items-center gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month{" "}
-                    <TrendingUp className="h-4 w-4" />
-                  </div>
-                  <div className="flex items-center gap-2 leading-none text-muted-foreground">
-                    January - June 2024
-                  </div>
-                </div>
-              </div>
+            <CardFooter className="flex-col items-start gap-2 text-sm">
             </CardFooter>
           </Card>
+          <div className="bg-white flex flex-col items-center  display-border shadow-inner drop-shadow-md px-10 py-4">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              อาการที่พบ
+            </h3>
+            <h3 className="text-xl whitespace-nowrap text-center">
+              ในเดือน {currentMonth} {currentYear}
+            </h3>
+            <div className="text-lg mt-2">
+              {console.log(symptomStats)}
+              {symptomStats.length > 0 ? (
+                symptomStats.map((stat) => (
+                  <div key={stat.symptom_id}>
+                    {stat.symptom_name}: {stat.count} คน
+                  </div>
+                ))
+              ) : (
+                <div>No data available</div>
+              )}
+            </div>
+          </div>
+          <div className="bg-white flex flex-col items-center  display-border shadow-inner drop-shadow-md px-10 py-4">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              ยาที่จ่ายในเดือน
+            </h3>
+            <h3 className="text-xl whitespace-nowrap text-center">
+              {currentMonth} {currentYear}
+            </h3>
+            <div className="text-lg mt-2">
+              {topPills.length > 0 ? (
+                (() => {
+                  // Aggregate counts by pill name
+                  const pillMap = topPills.reduce((acc, stat) => {
+                    if (!acc[stat.pill_name]) {
+                      acc[stat.pill_name] = 0;
+                    }
+                    acc[stat.pill_name] += stat.count;
+                    return acc;
+                  }, {});
+
+                  return Object.entries(pillMap).map(
+                    ([pill_name, count], index) => (
+                      <div key={index}>
+                        {pill_name} {count} ครั้ง
+                      </div>
+                    )
+                  );
+                })()
+              ) : (
+                <div>No data available</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </MantineProvider>

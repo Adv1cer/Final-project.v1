@@ -21,10 +21,10 @@ export async function GET(request, { params }) {
 
     const [ticketRows] = await connection.execute(
       `
-      SELECT t.ticket_id, t.datetime, t.status, s.student_name
-      FROM ticket t
-      JOIN student s ON t.student_id = s.student_id
-      WHERE t.ticket_id = ?
+      SELECT pa.patientrecord_id, pa.datetime, pa.status, p.patient_name
+      FROM patientrecord pa
+      JOIN patient p ON p.patient_id = p.patient_id
+      WHERE pa.patientrecord_id = ?
       `,
       [ticket_id]
     );
@@ -37,10 +37,10 @@ export async function GET(request, { params }) {
 
     const [symptomsRows] = await connection.execute(
       `
-      SELECT sr.symptomrecord_id, sr.ticket_id, sy.symptom_name
+      SELECT sr.patientrecord_id, sy.symptom_name
       FROM symptomrecord sr
       JOIN symptom sy ON sr.symptom_id = sy.symptom_id
-      WHERE sr.ticket_id = ?
+      WHERE sr.patientrecord_id = ?
       `,
       [ticket_id]
     );
@@ -73,15 +73,15 @@ export async function DELETE(request, { params }) {
     await connection.execute(
       `
       DELETE FROM symptomrecord
-      WHERE ticket_id = ?
+      WHERE patientrecord_id = ?
       `,
       [ticket_id]
     );
 
     const [result] = await connection.execute(
       `
-      DELETE FROM ticket
-      WHERE ticket_id = ?
+      DELETE FROM patientrecord
+      WHERE patientrecord_id = ?
       `,
       [ticket_id]
     );

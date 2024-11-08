@@ -10,7 +10,7 @@ function Display() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/display');
+      const response = await fetch('/api/dashboard');
       const data = await response.json();
 
       const today = new Date();
@@ -44,10 +44,10 @@ function Display() {
   };
 
   useEffect(() => {
-    fetchData();
-    const intervalId = setInterval(fetchData, 5000);
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 3000); // Poll every 3 seconds
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   return (

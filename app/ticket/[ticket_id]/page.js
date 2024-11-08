@@ -4,6 +4,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useSession } from "next-auth/react";
 import { Button } from '@/components/ui/button';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function TicketPage() {
     const { data: session, status } = useSession();
@@ -79,21 +81,27 @@ export default function TicketPage() {
     const handlePillClick = (pill) => {
         setSelectedPills((prevSelectedPills) => {
             if (prevSelectedPills.some(selectedPill => selectedPill.pillstock_id === pill.pillstock_id)) {
-                return prevSelectedPills; // Return existing array if pill is already selected
+                return prevSelectedPills; 
             }
-            return [...prevSelectedPills, { ...pill, count: 0 }]; // Initialize count to 0
+            return [...prevSelectedPills, { ...pill, count: 0 }]; 
         });
     };
 
     const handleCountChange = (index, count) => {
-        setSelectedPills((prevSelectedPills) =>
+        setSelectedPills((prevSelectedPills) => 
             prevSelectedPills.map((pill, i) =>
                 i === index ? { ...pill, count: count } : pill
             )
         );
+        setError('');
     };
 
     const handleSubmit = async () => {
+        if (selectedPills.length === 0 || selectedPills.some(pill => pill.count === 0)) {
+            toast.error('Pill count is required');
+            return;
+        }
+
         const pillRecords = selectedPills.map(pill => ({
             pillstock_id: pill.pillstock_id,
             quantity: pill.count,
@@ -159,6 +167,7 @@ export default function TicketPage() {
     return (
         <main>
             <Navbar session={session} />
+            <ToastContainer />
             <div>
                 <div className="flex min-h-screen bg-gray-100 grid col-3 gap-2">
                     <div className="">
@@ -250,6 +259,7 @@ export default function TicketPage() {
                                                                 className="border rounded px-2 py-1 w-full"
                                                                 value={pill.count || ''}
                                                                 onChange={(e) => handleCountChange(index, parseInt(e.target.value, 10))}
+                                                                required
                                                             />
                                                         </td>
                                                         <td className="border px-4 py-2 w-20">
@@ -284,4 +294,4 @@ export default function TicketPage() {
             </div>
         </main>
     );
-} 
+}

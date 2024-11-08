@@ -1,20 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/Navbar";
+import HistoryComponent from "@/components/History";
 
-import DashboardComponent from "@/components/Dashboard";
-import Footer from "@/components/Footer";
-
-function Dashboard() {
-  const { data: session, status } = useSession();
+function History() {
+  const { data: session } = useSession();
   return (
     <main>
       <Navbar session={session} />
-      <DashboardComponent />
+      <HistoryComponent />
     </main>
   );
 }
 
-export default Dashboard;
+export default History;
