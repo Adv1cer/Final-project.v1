@@ -11,7 +11,10 @@ const pool = mysql.createPool({
 });
 
 export async function GET(request) {
+  let connection;
   try {
+    connection = await pool.getConnection();
+
     const sql = `
       SELECT
         patientrecord.patientrecord_id,
@@ -46,11 +49,15 @@ export async function GET(request) {
         patientrecord.datetime DESC;
     `;
 
-    const [rows] = await pool.execute(sql);
+    const [rows] = await connection.execute(sql);
 
     return new Response(JSON.stringify(rows), { status: 200 });
   } catch (err) {
     console.error('Error fetching data:', err);
     return new Response(JSON.stringify({ error: 'Failed to fetch data' }), { status: 500 });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 }

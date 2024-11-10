@@ -53,9 +53,9 @@ export default function DashboardComponent() {
 
   const fetchTickets = async () => {
     try {
-      const res = await fetch('/api/dashboard'); 
+      const res = await fetch("/api/dashboard");
       if (!res.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await res.json();
       setTickets(data);
@@ -63,8 +63,14 @@ export default function DashboardComponent() {
       // Check for new tickets
       const prevTickets = prevTicketsRef.current;
       if (prevTickets.length > 0 && data.length > prevTickets.length) {
-        const newTickets = data.filter(ticket => !prevTickets.some(prevTicket => prevTicket.patientrecord_id === ticket.patientrecord_id));
-        newTickets.forEach(ticket => {
+        const newTickets = data.filter(
+          (ticket) =>
+            !prevTickets.some(
+              (prevTicket) =>
+                prevTicket.patientrecord_id === ticket.patientrecord_id
+            )
+        );
+        newTickets.forEach((ticket) => {
           toast({
             variant: "success",
             title: "มีผู้ป่วยใหม่",
@@ -75,16 +81,11 @@ export default function DashboardComponent() {
       }
       prevTicketsRef.current = data;
     } catch (error) {
-      console.error('Error fetching tickets:', error);
+      console.error("Error fetching tickets:", error);
       setError(error.message);
     } finally {
       setLoading(false);
     }
-  };
-  
-  const startPolling = () => {
-    const intervalId = setInterval(fetchTickets, 3000);
-    return () => clearInterval(intervalId);
   };
 
   const handleDelete = async (patientrecord_id) => {
@@ -96,7 +97,9 @@ export default function DashboardComponent() {
         throw new Error("Network response was not ok");
       }
       setTickets((prevTickets) =>
-        prevTickets.filter((ticket) => ticket.patientrecord_id !== patientrecord_id)
+        prevTickets.filter(
+          (ticket) => ticket.patientrecord_id !== patientrecord_id
+        )
       );
     } catch (error) {
       console.error("Error deleting ticket:", error);
@@ -105,12 +108,13 @@ export default function DashboardComponent() {
   };
 
   useEffect(() => {
-    const stopPolling = startPolling();
     if (status === "loading") {
       return;
     }
+    fetchTickets(); 
+    const interval = setInterval(fetchTickets, 5000); 
 
-    return () => stopPolling();
+    return () => clearInterval(interval); 
   }, [session, status, router]);
 
   if (loading) {
@@ -194,6 +198,20 @@ export default function DashboardComponent() {
   const handleFinishedPageChange = (pageNumber) => {
     setCurrentFinishedPage(pageNumber);
   };
+
+  const formatDate = (datetime) => {
+    const date = new Date(datetime);
+    const dateString = date.toLocaleDateString("th-TH", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const timeString = date.toLocaleTimeString("th-TH", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${dateString}\nเวลา ${timeString}`;
+  };
   return (
     <div>
       <div>
@@ -213,16 +231,13 @@ export default function DashboardComponent() {
                   <th className="py-2 px-4 border-b text-center">
                     รหัสนักศึกษา
                   </th>
-                  <th className="py-2 px-4 border-b text-center">
-                    บทบาท
-                  </th>
+                  <th className="py-2 px-4 border-b text-center">บทบาท</th>
                   <th className="py-2 px-4 border-b text-center">
                     วันที่และเวลา
                   </th>
                   <th className="py-2 px-4 border-b text-center">ดำเนินการ</th>
                 </tr>
               </thead>
-              {console.log(tickets)}
               <tbody>
                 {currentActiveTodayTickets.length > 0 ? (
                   currentActiveTodayTickets.map((ticket) => (
@@ -248,7 +263,7 @@ export default function DashboardComponent() {
                             สั่งยา
                           </td>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[425px] display-border">
                           <DialogHeader>
                             <DialogTitle>Patient Ticket</DialogTitle>
                             <DialogDescription>
@@ -298,17 +313,22 @@ export default function DashboardComponent() {
                                         <p>
                                           ชื่อยา:{" "}
                                           {ticket.pill_names
-                                            ? ticket.pill_names.split(",")[index]
+                                            ? ticket.pill_names.split(",")[
+                                                index
+                                              ]
                                             : "Unknown"}
                                         </p>
                                         <p>
                                           รหัสสต็อกยา:{" "}
                                           {ticket.pillstock_ids
-                                            ? ticket.pillstock_ids.split(",")[index]
+                                            ? ticket.pillstock_ids.split(",")[
+                                                index
+                                              ]
                                             : "Unknown"}
                                         </p>
                                         <p>
-                                          ปริมาณ : {quantity.trim()} {ticket.unit_type}
+                                          ปริมาณ : {quantity.trim()}{" "}
+                                          {ticket.unit_type}
                                         </p>
                                       </div>
                                     ))}
@@ -370,7 +390,7 @@ export default function DashboardComponent() {
 
           <div className="bg-white w-full max-w-4xl rounded shadow-md mt-4 ">
             <div className="bg-green-900 text-white text-lg font-semibold p-4 rounded-t-md">
-            รายชื่อผู้ป่วยจ่ายยาเเล้ว
+              รายชื่อผู้ป่วยจ่ายยาเเล้ว
             </div>
             <table className="min-w-full bg-white opacity-50">
               <thead>
@@ -381,9 +401,7 @@ export default function DashboardComponent() {
                   <th className="py-2 px-4 border-b text-center">
                     รหัสนักศึกษา
                   </th>
-                  <th className="py-2 px-4 border-b text-center">
-                    บทบาท
-                  </th>
+                  <th className="py-2 px-4 border-b text-center">บทบาท</th>
                   <th className="py-2 px-4 border-b text-center">
                     วันที่และเวลา
                   </th>
@@ -409,79 +427,73 @@ export default function DashboardComponent() {
                       <td className="py-2 px-4 border-b text-center">
                         {new Date(ticket.datetime).toLocaleString()}
                       </td>
-                      <Dialog>
+                      <Dialog className="">
                         <DialogTrigger asChild>
                           <td className="py-2 px-4 border-b text-blue-700 cursor-pointer text-center">
                             ดูข้อมูล
                           </td>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="w-full">
                           <DialogHeader>
                             <DialogTitle>Patient Ticket</DialogTitle>
                             <DialogDescription>
                               Status: Finished
                             </DialogDescription>
                           </DialogHeader>
-                          <div className="grid gap-2 py-1">
-                            <h3 className="ml-10">
-                              ชื่อ: {ticket.patient_name}
-                            </h3>
-                            <h3 className="ml-10">
-                              รหัสนักศึกษา: {ticket.patient_id}
-                            </h3>
-                            <h3 className="ml-10">
-                              เวลาเช็คอิน:{" "}
-                              {new Date(ticket.datetime).toLocaleString()}
-                            </h3>
+                          <div className="grid gap-1">
+                            <div>
+                              <h3 className="ml-10 text-lg">ชื่อ-นามสกุล</h3>
+                              <div className="ml-16">{ticket.patient_name}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">รหัสนักศึกษา</h3>
+                              <div className="ml-16">{ticket.patient_id}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">เวลาเช็คอิน</h3>
+                              <div className="ml-16">{formatDate(ticket.datetime)}</div>
+                              
+                            </div>
                             <br />
-                            <h3 className="ml-10">อาการของผู้ป่วย</h3>
+                            <h3 className="ml-10 text-lg">อาการของผู้ป่วย</h3>
                             {ticket.symptom_names ? (
-                              <div className="ml-10 space-y-2">
-                                {ticket.symptom_names
-                                  .split(",")
-                                  .map((symptom, index) => (
-                                    <p key={index} className="block">
-                                      {symptom.trim()}
-                                    </p>
-                                  ))}
-                              </div>
-                            ) : (
-                              <p className="ml-10">ไม่มีอาการที่บันทึกไว้</p>
-                            )}
+                            <div className="ml-10 space-y-2 text-lg">
+                              <p className="ml-10">{ticket.symptom_names.split(",").map(symptom => symptom.trim()).join(", ")}</p>
+                            </div>
+                          ) : (
+                            <p className="ml-10 text-lg">ไม่มีอาการที่บันทึกไว้</p>
+                          )}
                             {ticket.other_symptom && (
-                              <div className="ml-10 mt-2">
-                                <h3>อาการอื่นๆ:</h3>
-                                <p>{ticket.other_symptom}</p>
+                              <div className="ml-10 mt-2 text-lg">
+                                <h3>อาการอื่นๆ </h3>
+                                <p className="ml-10">{ticket.other_symptom}</p>
                               </div>
                             )}
-                            {ticket.pill_quantities && (
-                              <div className="ml-10 mt-2">
-                                <h3>บันทึกยา:</h3>
-                                <div className="space-y-2">
-                                  {ticket.pill_quantities
-                                    .split(",")
-                                    .map((quantity, index) => (
-                                      <div key={index} className="block">
-                                        <p>
-                                          ชื่อยา:{" "}
-                                          {ticket.pill_names
-                                            ? ticket.pill_names.split(",")[index]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>
-                                          รหัสสต็อกยา:{" "}
-                                          {ticket.pillstock_ids
-                                            ? ticket.pillstock_ids.split(",")[index]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>
-                                          ปริมาณ : {quantity.trim()} {ticket.unit_type}
-                                        </p>
-                                      </div>
+                          {ticket.pill_quantities && (
+                            <div className="mt-2">
+                              <div className="space-y-2 bg-gray-200">
+                                <table className="border-collapse border mx-auto w-full max-w-4xl">
+                                  <thead>
+                                  <h3 className="text-xl font-semibold border bg-gray-200">บันทึกยา</h3>
+                                    <tr className="border bg-gray-200">
+                                      <th className="border px-4 py-2">Lot Id</th>
+                                      <th className="border px-4 py-2">Pill Name</th>
+                                      <th className="border px-4 py-2">Quantity</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {ticket.pill_quantities.split(",").map((quantity, index) => (
+                                      <tr key={index}>
+                                        <td className="border px-4 py-2">{ticket.pillstock_ids ? ticket.pillstock_ids.split(",")[index] : "Unknown"}</td>
+                                        <td className="border px-4 py-2">{ticket.pill_names ? ticket.pill_names.split(",")[index] : "Unknown"}</td>
+                                        <td className="border px-4 py-2">{quantity.trim()} {ticket.unit_type}</td>
+                                      </tr>
                                     ))}
-                                </div>
+                                  </tbody>
+                                </table>
                               </div>
-                            )}
+                            </div>
+                          )}
                           </div>
                           <DialogFooter>
                             <DialogClose asChild>

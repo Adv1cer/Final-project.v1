@@ -49,8 +49,9 @@ export default function PatientForm() {
   const handleRoleChange = (event) => {
     const selectedRole = event.target.value;
     setRole(selectedRole);
-    if (selectedRole === "outsider") {
+    if (selectedRole === "บุคคลภายนอก") {
       setStudentId("");
+      setStudentName("");
     }
   };
 
@@ -92,12 +93,17 @@ export default function PatientForm() {
       return;
     }
 
-    if (!studentId && role !== "outsider" || !studentName || !role || selectedSymptoms.length === 0) {
+    if (
+      (!studentId && role !== "บุคคลภายนอก") ||
+      !studentName ||
+      !role ||
+      selectedSymptoms.length === 0
+    ) {
       toast({
         variant: "destructive",
-        title: "Submission Failed",
+        title: "เกิดข้อผิดพลาด",
         description:
-          "Please fill in all fields and select at least one symptom.",
+          "โปรดกรอกข้อมูลให้ครบถ้วน",
         duration: 2000,
       });
       return;
@@ -121,30 +127,30 @@ export default function PatientForm() {
       });
 
       if (response.ok) {
-          if (role === "outsider"){
-            toast({
-              variant: "success",
-              title: "Data Submitted",
-              description: `ชื่อ-นามสกุล ${studentName} 
+        if (role === "บุคคลภายนอก") {
+          toast({
+            variant: "success",
+            title: "ได้รับข้อมูลแล้ว",
+            description: `ชื่อ-นามสกุล ${studentName} 
                             ตำแหน่ง ${role} 
                             อาการ ${selectedSymptomLabels} ${
-                selectedSymptoms.includes(12) ? ` ${otherSymptom}` : ""
-              }`,
-              duration: 2000,
-            });
-          }else {
-            toast({
-              variant: "success",
-              title: "Data Submitted",
-              description: `รหัสนักศึกษา ${studentId} 
+              selectedSymptoms.includes(12) ? ` ${otherSymptom}` : ""
+            }`,
+            duration: 2000,
+          });
+        } else {
+          toast({
+            variant: "success",
+            title: "ได้รับข้อมูลแล้ว",
+            description: `รหัสนักศึกษา ${studentId} 
                             ชื่อ-นามสกุล ${studentName} 
                             ตำแหน่ง ${role} 
                             อาการ ${selectedSymptomLabels} ${
-                selectedSymptoms.includes(12) ? ` ${otherSymptom}` : ""
-              }`,
-              duration: 2000,
-            });
-          }
+              selectedSymptoms.includes(12) ? ` ${otherSymptom}` : ""
+            }`,
+            duration: 2000,
+          });
+        }
       } else {
         console.log("Failed to submit data");
       }
@@ -156,7 +162,8 @@ export default function PatientForm() {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) return null; 
+  if (!isMounted) return null;
+
   return (
     <div>
       <div className="flex justify-center items-center min-h-screen bg-custom">
@@ -184,7 +191,7 @@ export default function PatientForm() {
                 <input
                   type="radio"
                   id="student"
-                  name="นักศึกษา"
+                  name="role"
                   value="นักศึกษา"
                   onChange={handleRoleChange}
                 />
@@ -194,7 +201,7 @@ export default function PatientForm() {
                 <input
                   type="radio"
                   id="staff"
-                  name="บุคลากร"
+                  name="role"
                   value="บุคลากร"
                   onChange={handleRoleChange}
                 />
@@ -204,14 +211,15 @@ export default function PatientForm() {
                 <input
                   type="radio"
                   id="outsider"
-                  name="บุคคลภายนอก"
+                  name="role"
                   value="บุคคลภายนอก"
                   onChange={handleRoleChange}
                 />
                 <label htmlFor="outsider"> บุคคลภายนอก</label>
               </div>
             </div>
-            {role !== "outsider" && (
+
+            {role !== "บุคคลภายนอก" && (
               <div className="mb-4">
                 <label className="block text-gray-700 text-center font-bold text-lg">
                   เลขนักศึกษา
@@ -232,7 +240,7 @@ export default function PatientForm() {
                 อาการ
               </label>
               <Select
-                className=" text-gray-500 text-sm"
+                className=" text-gray-500 text-sm "
                 options={options}
                 placeholder="เลือกอาการของคุณ"
                 noOptionsMessage={() => "no results found"}

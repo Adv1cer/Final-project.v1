@@ -41,7 +41,7 @@ export default function LoginForm() {
             if (res.error) {
                 toast({
                     variant: "destructive",
-                    title: 'Login Failed',
+                    title: 'เกิดข้อผิดพลาด',
                     description: 'อีเมล หรือ รหัสผ่านไม่ถูก',
                     duration: 2000,
                 });
@@ -50,7 +50,7 @@ export default function LoginForm() {
 
             toast({
                 variant: "success",
-                title: 'Successfully Logged In',
+                title: 'กำลังเข้าสู่ระบบ',
                 duration: 2000,
             });
 

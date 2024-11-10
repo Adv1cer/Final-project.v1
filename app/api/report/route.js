@@ -33,7 +33,7 @@ export async function GET() {
       GROUP BY sr.symptom_id
       ORDER BY count DESC
       LIMIT 12
-    `, [startOfWeek]);
+    `, [startOfWeek.toISOString().slice(0, 19).replace('T', ' ')]);
 
     const [pillStats] = await connection.query(`
       SELECT ps.pillstock_id, COUNT(pr.pillstock_id) as count, p.pill_name
@@ -45,17 +45,14 @@ export async function GET() {
       GROUP BY ps.pillstock_id, p.pill_name
       ORDER BY count DESC
       LIMIT 10
-    `, [startOfMonth, endOfMonth]);
+    `, [startOfMonth.toISOString().slice(0, 19).replace('T', ' '), endOfMonth.toISOString().slice(0, 19).replace('T', ' ')]);
 
     const todayDate = new Date();
-    const startTime = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), 5, 0, 0);
-    const endTime = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), 19, 0, 0);
+    const startTime = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), 0, 0, 0);
+    const endTime = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), 23, 59, 59);
 
     const startTimeGMT7 = new Date(startTime.getTime() + (7 * 60 * 60 * 1000));
     const endTimeGMT7 = new Date(endTime.getTime() + (7 * 60 * 60 * 1000));
-
-    console.log('startTimeGMT7:', startTime);
-    console.log('endTimeGMT7:', endTime);
 
     const [rawPatientRecords] = await connection.query(`
       SELECT *
@@ -67,16 +64,14 @@ export async function GET() {
       SELECT HOUR(datetime) as hour, COUNT(*) as record_count
       FROM patientrecord
       WHERE datetime BETWEEN ? AND ?
-      AND HOUR(datetime) BETWEEN 6 AND 18
       GROUP BY HOUR(datetime)
       ORDER BY hour
     `, [startTimeGMT7.toISOString().slice(0, 19).replace('T', ' '), endTimeGMT7.toISOString().slice(0, 19).replace('T', ' ')]);
 
-    const chartData = Array.from({ length: 13 }, (_, i) => {
-      const hour = i + 6;
-      const row = patientRecordCounts.find(r => r.hour === hour);
+    const chartData = Array.from({ length: 24 }, (_, i) => {
+      const row = patientRecordCounts.find(r => r.hour === i);
       return {
-        hour: `${hour}:00`,
+        hour: `${i}:00`,
         record_count: row ? row.record_count : 0,
       };
     });
