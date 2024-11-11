@@ -35,6 +35,7 @@ export default function PatientForm() {
       router.push("/dashboard");
     }
   }, [session, status, router]);
+
   const [isMounted, setIsMounted] = useState(false);
   const [studentId, setStudentId] = useState("");
   const [studentName, setStudentName] = useState("");
@@ -49,10 +50,6 @@ export default function PatientForm() {
   const handleRoleChange = (event) => {
     const selectedRole = event.target.value;
     setRole(selectedRole);
-    if (selectedRole === "บุคคลภายนอก") {
-      setStudentId("");
-      setStudentName("");
-    }
   };
 
   const onSubmit = async (event) => {
@@ -90,22 +87,6 @@ export default function PatientForm() {
     const confirmed = window.confirm(confirmMessage);
 
     if (!confirmed) {
-      return;
-    }
-
-    if (
-      (!studentId && role !== "บุคคลภายนอก") ||
-      !studentName ||
-      !role ||
-      selectedSymptoms.length === 0
-    ) {
-      toast({
-        variant: "destructive",
-        title: "เกิดข้อผิดพลาด",
-        description:
-          "โปรดกรอกข้อมูลให้ครบถ้วน",
-        duration: 2000,
-      });
       return;
     }
 
@@ -158,6 +139,7 @@ export default function PatientForm() {
       console.error("Error submitting data:", error);
     }
   };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -219,22 +201,20 @@ export default function PatientForm() {
               </div>
             </div>
 
-            {role !== "บุคคลภายนอก" && (
-              <div className="mb-4">
-                <label className="block text-gray-700 text-center font-bold text-lg">
-                  เลขนักศึกษา
-                </label>
-                <input
-                  type="text"
-                  id="student_id"
-                  value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
-                  className="mt-1 block w-full p-2 border border-black input-border pl-4"
-                  placeholder="เลขนักศึกษา"
-                  style={{ borderColor: "black" }}
-                />
-              </div>
-            )}
+            <div className="mb-4">
+              <label className="block text-gray-700 text-center font-bold text-lg">
+                เลขนักศึกษา
+              </label>
+              <input
+                type="text"
+                id="student_id"
+                value={studentId}
+                onChange={(e) => setStudentId(e.target.value)}
+                className="mt-1 block w-full p-2 border border-black input-border pl-4"
+                placeholder="เลขนักศึกษา"
+                style={{ borderColor: "black" }}
+              />
+            </div>
             <div className="flex w-full flex-col gap-1 ">
               <label className="block  text-center font-bold text-lg">
                 อาการ

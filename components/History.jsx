@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 
 const fetchTickets = async (setTickets, setError) => {
   try {
-    const response = await fetch("/api/history");
+    const response = await fetch("/api/dashboard");
     const data = await response.json();
     if (response.ok) {
       setTickets(data || []);
@@ -33,6 +33,7 @@ const fetchTickets = async (setTickets, setError) => {
 export default function HistoryComponent() {
   const [tickets, setTickets] = useState([]);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchTickets(setTickets, setError);
@@ -40,6 +41,13 @@ export default function HistoryComponent() {
 
   // Filter tickets to show only those with status 0
   const finishedTickets = tickets.filter((ticket) => ticket.status === 0);
+
+  // Filter tickets based on search query
+  const filteredTickets = finishedTickets.filter(
+    (ticket) =>
+      ticket.patient_id.includes(searchQuery) ||
+      ticket.patient_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div>
@@ -64,7 +72,9 @@ export default function HistoryComponent() {
                 <input
                   type="text"
                   placeholder="search"
-                  className="ml-4 px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="text-black ml-4 px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -86,8 +96,8 @@ export default function HistoryComponent() {
                 </tr>
               </thead>
               <tbody>
-                {finishedTickets.length > 0 ? (
-                  finishedTickets.map((ticket) => (
+                {filteredTickets.length > 0 ? (
+                  filteredTickets.map((ticket) => (
                     <tr
                       key={ticket.patientrecord_id}
                       className="border bg-green-100 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg"
@@ -119,10 +129,10 @@ export default function HistoryComponent() {
                           </DialogHeader>
                           <div className="grid gap-2 py-1">
                             <h3 className="ml-10">
-                              Name: {ticket.student_name}
+                              Name: {ticket.patient_name}
                             </h3>
                             <h3 className="ml-10">
-                              Student ID: {ticket.student_id}
+                              Student ID: {ticket.patient_id}
                             </h3>
                             <h3 className="ml-10">
                               Check-in Time:{" "}
@@ -160,17 +170,13 @@ export default function HistoryComponent() {
                                         <p>
                                           Pill Name:{" "}
                                           {ticket.pill_names
-                                            ? ticket.pill_names.split(",")[
-                                                index
-                                              ]
+                                            ? ticket.pill_names.split(",")[index]
                                             : "Unknown"}
                                         </p>
                                         <p>
                                           Pill Stock ID:{" "}
                                           {ticket.pillstock_ids
-                                            ? ticket.pillstock_ids.split(",")[
-                                                index
-                                              ]
+                                            ? ticket.pillstock_ids.split(",")[index]
                                             : "Unknown"}
                                         </p>
                                         <p>Quantity: {quantity.trim()}</p>
@@ -193,7 +199,7 @@ export default function HistoryComponent() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center py-4">
+                    <td colSpan="5" className="text-center py-4">
                       No patient listed currently.
                     </td>
                   </tr>

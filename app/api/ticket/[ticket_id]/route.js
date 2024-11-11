@@ -23,7 +23,7 @@ export async function GET(request, { params }) {
       `
       SELECT pa.patientrecord_id, pa.datetime, pa.status, p.patient_name
       FROM patientrecord pa
-      JOIN patient p ON p.patient_id = p.patient_id
+      JOIN patient p ON pa.patient_id = p.patient_id
       WHERE pa.patientrecord_id = ?
       `,
       [ticket_id]

@@ -13,9 +13,9 @@ export async function middleware(request) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   } else {
-    if (pathname.toLowerCase().startsWith("/dashboard") ||
+    if (pathname.toLowerCase().startsWith("/homepage") ||
         pathname.toLowerCase().startsWith("/medicine") ||
-        pathname.toLowerCase().startsWith("/history") ||
+        pathname.toLowerCase().startsWith("/dashboard") ||
         pathname.toLowerCase().startsWith("/ticket")) {
       return NextResponse.redirect(new URL("/", request.url));
     }

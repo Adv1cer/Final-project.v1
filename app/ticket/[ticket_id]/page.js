@@ -143,7 +143,7 @@ export default function TicketPage() {
 
             const ticketData = await ticketResponse.json();
             if (ticketData.status === 0) {
-                router.push('/dashboard');
+                router.push('/homepage');
             }
 
         } catch (err) {
@@ -175,7 +175,7 @@ export default function TicketPage() {
                             <div className="bg-white shadow-md rounded-lg p-8 max-w-lg w-full m-auto">
                                 <h1 className="flex justify-center content-center text-xl">Ticket Details</h1>
                                 <p>Date and Time: {new Date(ticket.datetime).toLocaleString()}</p>
-                                <p>Student Name: {ticket.student_name}</p>
+                                <p>Patient Name: {ticket.patient_name}</p>
                                 <h2>Symptoms</h2>
                                 {ticket.symptoms.length > 0 ? (
                                     <ul>

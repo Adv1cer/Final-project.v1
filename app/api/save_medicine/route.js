@@ -27,16 +27,16 @@ export async function POST(req) {
     } else {
       // Pill does not exist, insert a new record
       const [pillResult] = await connection.execute(
-        'INSERT INTO pill (pill_name, dose, type_id) VALUES (?, ?, ?)',
-        [pillName, dose, typeName]
+        'INSERT INTO pill (pill_name, dose, type_id, unit_id) VALUES (?, ?, ?, ?)',
+        [pillName, dose, typeName, unit]
       );
       pillId = pillResult.insertId;
     }
 
     // Insert into pillstock table
     await connection.execute(
-      'INSERT INTO pillstock (pill_id, expire, total, unit_id) VALUES (?, ?, ?, ?)',
-      [pillId, expireDate, total, unit]
+      'INSERT INTO pillstock (pill_id, expire, total) VALUES (?, ?, ?)',
+      [pillId, expireDate, total]
     );
 
     await connection.commit();

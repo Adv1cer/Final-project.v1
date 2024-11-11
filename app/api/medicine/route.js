@@ -37,8 +37,9 @@ async function getPillStock() {
                 unit.unit_type
             FROM pillstock
             JOIN pill ON pillstock.pill_id = pill.pill_id
-            JOIN unit ON pillstock.unit_id = unit.unit_id
+            JOIN unit ON pill.unit_id = unit.unit_id
             JOIN pill_type ON pill.type_id = pill_type.type_id
+            ORDER BY pillstock.pillstock_id ASC
         `;
 
         const [results] = await connection.execute(query);

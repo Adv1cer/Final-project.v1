@@ -43,7 +43,7 @@ export default function MedicineComponent() {
       router.push("/");
       return;
     }
-
+    
     fetchPillList();
     fetchData();
   }, [session, status, router]);
@@ -81,6 +81,7 @@ export default function MedicineComponent() {
       console.error("Error fetching data:", err);
       setError(err.message);
     }
+
   };
 
   const fetchTypes = async () => {
@@ -107,6 +108,7 @@ export default function MedicineComponent() {
     } catch (err) {
       console.error("Error fetching units:", err);
     }
+
   };
 
   const handleSaveChanges = async () => {
@@ -117,6 +119,7 @@ export default function MedicineComponent() {
       expireDate,
       total,
       unit,
+      status: 1
     };
 
     try {
@@ -139,6 +142,10 @@ export default function MedicineComponent() {
     } catch (err) {
       console.error("Error saving data:", err);
     }
+    fetchData();
+    fetchPillList();
+    fetchTypes();
+    fetchUnits();
   };
 
   const handleRemove = async (pillstock_id) => {
@@ -161,6 +168,10 @@ export default function MedicineComponent() {
     } catch (err) {
       console.error("Error removing data:", err);
     }
+    fetchData();
+    fetchPillList();
+    fetchTypes();
+    fetchUnits();
   };
 
   const handleAddPillList = async () => {
@@ -168,9 +179,11 @@ export default function MedicineComponent() {
       pillName,
       dose,
       typeName,
-      status: 1 
+      unit: unitType,
+      status: 1
+
     };
-  
+
     console.log("Sending data to server:", formPillList);
     try {
       const response = await fetch('/api/medicine/pill/submit_pilllist', {
@@ -180,11 +193,11 @@ export default function MedicineComponent() {
         },
         body: JSON.stringify(formPillList),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log("Data added successfully:", data);
       fetchPillList();
@@ -241,20 +254,29 @@ export default function MedicineComponent() {
     } catch (err) {
       console.error("Error updating data:", err);
     }
+    fetchData();
+    fetchPillList();
+    fetchTypes();
+    fetchUnits();
   };
 
   const handleUpdatePillList = async () => {
+    const selectedUnit = units.find((unitItem) => unitItem.unit_type === unit); // หา unit_id จาก unit_type ที่เลือก
+    const unitId = selectedUnit ? selectedUnit.unit_id : null;
+
+    if (!unitId) {
+      console.error('Unit ID not found');
+      return;
+    }
+
     const formPillList = {
       pillName,
       dose,
       typeName,
+      unitId, 
     };
 
     console.log("Sending an update to server:", formPillList);
-    console.log(
-      "Request URL:",
-      `/api/medicine/pill/${selectedPillList.pill_id}`
-    );
     try {
       const response = await fetch(
         `/api/medicine/pill/${selectedPillList.pill_id}`,
@@ -273,55 +295,47 @@ export default function MedicineComponent() {
 
       const data = await response.json();
       console.log("Data updated successfully:", data);
-      fetchPillList();
+      fetchPillList(); // เรียกฟังก์ชันดึงข้อมูลใหม่
     } catch (err) {
       console.error("Error updating data:", err);
     }
+    fetchData();
+    fetchPillList();
+    fetchTypes();
+    fetchUnits();
   };
+
 
   const handleRemovePillList = async (pill_id) => {
     try {
+      // ส่ง PUT request ไปยัง backend เพื่ออัพเดต status เป็น 0
       const response = await fetch(`/api/medicine/pill/${pill_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: 0 }),
+        body: JSON.stringify({ status: 0 }),  // ส่ง status = 0 เพื่อทำการลบ
       });
 
+      // เช็คว่า request สำเร็จหรือไม่
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log("Pill status updated successfully:", data);
-      fetchPillList();
+      // กรอง pillStock โดยลบรายการที่มี status = 0 ออก
+      setPillStock((prevPillStock) =>
+        prevPillStock.filter((item) => item.pill_id !== pill_id || item.status !== 0)
+      );
     } catch (err) {
-      console.error("Error updating pill status:", err);
+      console.error("Error removing data:", err);
     }
+    fetchData();
+    fetchPillList();
+    fetchTypes();
+    fetchUnits();
   };
 
-  const handleActivatePill = async (pill_id) => {
-    try {
-      const response = await fetch(`/api/medicine/pill/${pill_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: 1 }),
-      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Pill status updated successfully:", data);
-      fetchPillList();
-    } catch (err) {
-      console.error("Error updating pill status:", err);
-    }
-  };
 
   if (status === "loading") {
     return <div className="text-center mt-20">Loading...</div>;
@@ -343,6 +357,7 @@ export default function MedicineComponent() {
     setPillName(item.pill_name);
     setDose(item.dose);
     setTypeName(item.type_name);
+    setUnit(item.unit_type);
   };
 
   return (
@@ -355,17 +370,6 @@ export default function MedicineComponent() {
           <div className="w-full max-w-6xl bg-white shadow-md table-rounded mr-10">
             <div className="bg-blue-800 text-white p-4 flex items-center justify-between table-rounded">
               <h1 className="text-xl font-semibold">รายการยาในคลัง</h1>
-              <div className="flex items-center space-x-4">
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายวัน
-                </button>
-
-                <input
-                  type="text"
-                  placeholder="search"
-                  className="ml-4 px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className="bg-cyan-400 text-white rounded">
@@ -496,11 +500,10 @@ export default function MedicineComponent() {
                   filteredPillStock.map((item) => (
                     <tr
                       key={item.pillstock_id}
-                      className={`border ${
-                        Number(item.total) <= 100
-                          ? "bg-red-500 text-red-500"
-                          : "bg-blue-100 text-black"
-                      }`}
+                      className={`border ${Number(item.total) <= 100
+                        ? "bg-red-500 text-red-500"
+                        : "bg-blue-100 text-black"
+                        }`}
                     >
                       <td className="border px-4 py-2">{item.pillstock_id}</td>
                       <td className="border px-4 py-2">{item.pill_name}</td>
@@ -531,77 +534,44 @@ export default function MedicineComponent() {
                                 changes.
                               </DialogDescription>
                             </DialogHeader>
+
                             <div className="grid gap-4 py-4">
                               <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="name" className="text-right">
                                   Pill Name
                                 </Label>
-                                <Input
-                                  id="name"
-                                  value={pillName}
-                                  onChange={(e) => setPillName(e.target.value)}
-                                  className="col-span-3"
-                                />
+                                <span id="name" className="col-span-3">
+                                  {pillName}
+                                </span>
                               </div>
 
                               <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="dose" className="text-right">
                                   Dose
                                 </Label>
-                                <Input
-                                  id="dose"
-                                  value={dose}
-                                  onChange={(e) => setDose(e.target.value)}
-                                  className="col-span-3"
-                                />
+                                <span id="dose" className="col-span-3">
+                                  {dose}
+                                </span>
                               </div>
 
                               <div className="grid grid-cols-4 items-center gap-4">
-                                <Label
-                                  htmlFor="typeName"
-                                  className="text-right"
-                                >
+                                <Label htmlFor="typeName" className="text-right">
                                   Type Name
                                 </Label>
-                                <select
-                                  id="typeName"
-                                  value={typeName}
-                                  onChange={(e) => setTypeName(e.target.value)}
-                                  className="col-span-3 border rounded px-2 py-1"
-                                >
-                                  <option value="">Select Type</option>
-                                  {types.map((type) => (
-                                    <option
-                                      key={type.type_id}
-                                      value={type.type_id}
-                                    >
-                                      {type.type_name}
-                                    </option>
-                                  ))}
-                                </select>
+                                <span id="typeName" className="col-span-3">
+                                  {typeName} {/* หรือจะใช้การจับค่าจาก type_id ก็ได้ */}
+                                </span>
                               </div>
 
                               <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="unit" className="text-right">
                                   Unit
                                 </Label>
-                                <select
-                                  id="unit"
-                                  value={unit}
-                                  onChange={(e) => setUnit(e.target.value)}
-                                  className="col-span-3 border rounded px-2 py-1"
-                                >
-                                  <option value="">Select Unit</option>
-                                  {units.map((unitItem) => (
-                                    <option
-                                      key={unitItem.unit_id}
-                                      value={unitItem.unit_id}
-                                    >
-                                      {unitItem.unit_type}
-                                    </option>
-                                  ))}
-                                </select>
+                                <span id="unit" className="col-span-3">
+                                  {unit} {/* หรือจะใช้ unit_id ก็ได้ */}
+                                </span>
                               </div>
+
                               <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="total" className="text-right">
                                   Total
@@ -622,13 +592,13 @@ export default function MedicineComponent() {
                                   type="date"
                                   id="expire"
                                   value={expireDate}
-                                  onChange={(e) =>
-                                    setExpireDate(e.target.value)
-                                  }
+                                  onChange={(e) => setExpireDate(e.target.value)}
                                   className="col-span-3 border rounded px-2 py-1"
                                 />
                               </div>
                             </div>
+
+
                             <DialogFooter className="mt-4">
                               <Button
                                 className="px-3 py-2 bg-red-600 text-white rounded"
@@ -662,90 +632,21 @@ export default function MedicineComponent() {
                   </tr>
                 ))}
               </tbody>
+
+
             </table>
           </div>
         </div>
+
+
 
         <div className="flex justify-center items-start mt-10">
           <div className="w-full max-w-2xl bg-white shadow-md table-rounded">
             <div className="bg-blue-800 text-white p-4 flex items-center justify-between table-rounded">
               <h1 className="text-xl font-semibold">รายชื่อยาในระบบ</h1>
-              <div className="flex items-center space-x-4">
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายวัน
-                </button>
 
-                <input
-                  type="text"
-                  placeholder="search"
-                  className="ml-4 px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="bg-cyan-400 text-white rounded">
-                    Add Pill
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Add New Pill</DialogTitle>
-                    <DialogDescription>
-                      Enter the details of the new pill below and save your
-                      changes.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Pill Name
-                      </Label>
-                      <Input
-                        id="name"
-                        value={pillName}
-                        onChange={(e) => setPillName(e.target.value)}
-                        className="col-span-3"
-                      />
-                    </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="dose" className="text-right">
-                        Dose
-                      </Label>
-                      <Input
-                        id="dose"
-                        value={dose}
-                        onChange={(e) => setDose(e.target.value)}
-                        className="col-span-3"
-                      />
-                    </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="typeName" className="text-right">
-                        Type Name
-                      </Label>
-                      <select
-                        id="typeName"
-                        value={typeName}
-                        onChange={(e) => setTypeName(e.target.value)}
-                        className="col-span-3 border rounded px-2 py-1"
-                      >
-                        <option value="">Select Type</option>
-                        {types.map((type) => (
-                          <option key={type.type_id} value={type.type_id}>
-                            {type.type_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <DialogFooter className="mt-4">
-                    <Button type="button" onClick={handleAddPillList}>
-                      Save Changes
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
             </div>
             <table className="border-collapse border mx-auto w-full max-w-7xl">
               <thead>
@@ -754,24 +655,21 @@ export default function MedicineComponent() {
                   <th className="border px-4 py-2">Pill Name</th>
                   <th className="border px-4 py-2">Dose</th>
                   <th className="border px-4 py-2">Type Name</th>
+                  <th className="border px-4 py-2">Unit Type</th>
                   <th className="border px-4 py-2">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {PillList.length > 0 ? (
-                  PillList.slice()
+                {Array.isArray(PillList) && PillList.filter((pill) => pill.status !== 0).length > 0 ? (
+                  PillList.filter((pill) => pill.status !== 0)
                     .sort((a, b) => b.status - a.status)
                     .map((pill, index) => (
-                      <tr
-                        key={`${pill.pill_id}-${index}`}
-                        className={`border ${
-                          pill.status === 0 ? "text-red-500" : ""
-                        }`}
-                      >
+                      <tr key={`${pill.pill_id}-${index}`}>
                         <td className="border px-4 py-2">{pill.pill_id}</td>
                         <td className="border px-4 py-2">{pill.pill_name}</td>
                         <td className="border px-4 py-2">{pill.dose}</td>
                         <td className="border px-4 py-2">{pill.type_name}</td>
+                        <td className="border px-4 py-2">{pill.unit_type}</td>
                         <td className="border px-4 py-2">
                           <Dialog>
                             <DialogTrigger asChild>
@@ -786,90 +684,64 @@ export default function MedicineComponent() {
                               <DialogHeader>
                                 <DialogTitle>Edit Pill</DialogTitle>
                                 <DialogDescription>
-                                  Edit the details of the pill below and save
-                                  your changes.
+                                  Edit the details of the pill below and save your changes.
                                 </DialogDescription>
                               </DialogHeader>
-                              <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label htmlFor="name" className="text-right">
-                                    Pill Name
-                                  </Label>
-                                  <Input
-                                    id="name"
-                                    value={pillName}
-                                    onChange={(e) =>
-                                      setPillName(e.target.value)
-                                    }
-                                    className="col-span-3"
-                                  />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label htmlFor="dose" className="text-right">
-                                    Dose
-                                  </Label>
-                                  <Input
-                                    id="dose"
-                                    value={dose}
-                                    onChange={(e) => setDose(e.target.value)}
-                                    className="col-span-3"
-                                  />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label
-                                    htmlFor="typeName"
-                                    className="text-right"
-                                  >
-                                    Type Name
-                                  </Label>
-                                  <select
-                                    id="typeName"
-                                    value={typeName}
-                                    onChange={(e) =>
-                                      setTypeName(e.target.value)
-                                    }
-                                    className="col-span-3 border rounded px-2 py-1"
-                                  >
-                                    <option value="">Select Type</option>
-                                    {types.map((type) => (
-                                      <option
-                                        key={type.type_id}
-                                        value={type.type_id}
-                                      >
-                                        {type.type_name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              </div>
+                              <Input
+                                id="pillName"
+                                value={pillName}
+                                onChange={(e) => setPillName(e.target.value)} // อัปเดต pillName
+                                className="col-span-3"
+                              />
+                              <Input
+                                id="dose"
+                                value={dose}
+                                onChange={(e) => setDose(e.target.value)} // อัปเดต dose
+                                className="col-span-3"
+                              />
+
+                              <select
+                                id="typeName"
+                                value={typeName}
+                                onChange={(e) => setTypeName(e.target.value)} // อัปเดต typeName
+                                className="col-span-3 border rounded px-2 py-1"
+                              >
+                                <option value="">Select Type</option>
+                                {types.map((type) => (
+                                  <option key={type.type_id} value={type.type_name}>
+                                    {type.type_name}
+                                  </option>
+                                ))}
+                              </select>
+
+                              <select
+                                id="unit"
+                                value={unit}
+                                onChange={(e) => setUnit(e.target.value)} // อัปเดต unit
+                                className="col-span-3 border rounded px-2 py-1"
+                              >
+                                <option value="">Select Unit</option>
+                                {units.map((unitItem) => (
+                                  <option key={unitItem.unit_id} value={unitItem.unit_type}>
+                                    {unitItem.unit_type}
+                                  </option>
+                                ))}
+                              </select>
+
                               <DialogFooter className="mt-4">
-                                {pill.status === 0 ? (
-                                  <Button
-                                    className="px-3 py-2 bg-green-600 text-white rounded"
-                                    onClick={() =>
-                                      handleActivatePill(pill.pill_id)
-                                    }
-                                  >
-                                    Activate
-                                  </Button>
-                                ) : (
-                                  <>
-                                    <Button
-                                      className="px-3 py-2 bg-red-600 text-white rounded"
-                                      onClick={() =>
-                                        handleRemovePillList(pill.pill_id)
-                                      }
-                                    >
-                                      Remove
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      onClick={handleUpdatePillList}
-                                    >
-                                      Save Changes
-                                    </Button>
-                                  </>
-                                )}
+                                <Button
+                                  className="px-3 py-2 bg-red-600 text-white rounded"
+                                  onClick={() => handleRemovePillList(pill.pill_id)}
+                                >
+                                  Remove
+                                </Button>
+
+                                <Button
+                                  type="button"
+                                  onClick={handleUpdatePillList}
+                                >
+                                  Save Changes
+                                </Button>
                               </DialogFooter>
                             </DialogContent>
                           </Dialog>
