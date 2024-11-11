@@ -364,7 +364,6 @@ export default function MedicineComponent() {
     <div className="min-h-screen flex flex-col">
       <Navbar session={session} />
       <Taskbar />
-
       <main className="flex-1 p-5">
         <div className="flex justify-center items-start mt-10">
           <div className="w-full max-w-6xl bg-white shadow-md table-rounded mr-10">
