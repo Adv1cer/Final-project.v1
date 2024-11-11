@@ -135,11 +135,12 @@ function Report() {
   const today = new Date();
   const currentMonth = monthNamesThai[today.getMonth()];
   const currentYear = today.getFullYear() + 543;
+  const [topPills, setTopPills] = useState([]);
 
   const fetchPieChart = async (timePeriod) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/chart/pieChart", {
+      const res = await fetch("/api/report/pieChart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,7 +170,7 @@ function Report() {
   const fetchChart = async (timePeriod) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/chart/ticketChart", {
+      const res = await fetch("/api/report/ticketChart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -336,13 +337,15 @@ function Report() {
   }, []);
 
   const todayChart = new Date();
-  const currentDayChart = today.getDate();
-  const currentDayOfWeekChart = dayNamesThai[today.getDay()];
-  const currentYearChart = today.getFullYear();
+  const currentDayChart = todayChart.getDate();
+  const currentMonthChart = monthNamesThai[todayChart.getMonth()];
+  const currentDayOfWeekChart = dayNamesThai[todayChart.getDay()];
+  const currentYearChart = todayChart.getFullYear();
   const lastFiveYearsChart = currentYearChart - 5;
-
+  
   const currentYearThai = currentYearChart + 543;
   const lastFiveYearsChartThai = currentYearThai - 5;
+
 
   return (
     <MantineProvider>
@@ -415,7 +418,7 @@ function Report() {
                 <CardTitle>
                   <div className="flex gap-2 font-medium leading-none">
                     {timePeriodChart === "day" &&
-                      `วัน ${currentDayOfWeekChart} ที่ ${currentDayChart}`}
+                      `วัน${currentDayOfWeekChart}ที่ ${currentDayChart} ${currentMonthChart} ${currentYearThai}`}
                     {timePeriodChart === "month" &&
                       `รายงานผู้ป่วยระหว่าง ${monthNamesThai[0]} ถึง ${monthNamesThai[11]}`}
                     {timePeriodChart === "year" &&
@@ -485,8 +488,8 @@ function Report() {
             </div>
             <Card className="h-full w-full flex flex-col">
               <CardHeader className="items-center pb-0">
-                <CardTitle>Pie Chart - Legend</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
+                <CardTitle>รายงานอาการผู้ป่วย</CardTitle>
+                <CardDescription></CardDescription>
               </CardHeader>
               <CardContent className="flex-1 pb-0">
                 <ChartContainer
@@ -511,6 +514,37 @@ function Report() {
                 </ChartContainer>
               </CardContent>
             </Card>
+          </div>
+          <div className="bg-white w-full sm:w-2/3 md:w-1/2 lg:w-1/3 flex flex-col items-center display-border shadow-inner drop-shadow-md px-10 py-4">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              ยาที่จ่ายในเดือน
+            </h3>
+            <h3 className="text-xl whitespace-nowrap text-center">
+              {currentMonth} {currentYear}
+            </h3>
+            <div className="text-lg mt-2">
+              {topPills.length > 0 ? (
+                (() => {
+                  const pillMap = topPills.reduce((acc, stat) => {
+                    if (!acc[stat.pill_name]) {
+                      acc[stat.pill_name] = 0;
+                    }
+                    acc[stat.pill_name] += stat.count;
+                    return acc;
+                  }, {});
+
+                  return Object.entries(pillMap).map(
+                    ([pill_name, count], index) => (
+                      <div key={index}>
+                        {pill_name} {count} ครั้ง
+                      </div>
+                    )
+                  );
+                })()
+              ) : (
+                <div>No data available</div>
+              )}
+            </div>
           </div>
         </div>
       </div>
