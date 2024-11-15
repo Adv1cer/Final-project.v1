@@ -4,6 +4,7 @@ import { signOut } from 'next-auth/react';
 import { Button } from './ui/button';
 import { useToast } from "@/hooks/use-toast";
 
+
 function Navbar({ session }) {
 
     const { toast } = useToast();

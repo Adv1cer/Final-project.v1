@@ -2,6 +2,13 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { IBM_Plex_Sans_Thai } from "next/font/google";
+
+const inter = IBM_Plex_Sans_Thai({
+  subsets: ["latin"],
+  weight: "400",
+
+});
 
 export default function Taskbar() {
   const { data: session, status } = useSession();
@@ -11,12 +18,12 @@ export default function Taskbar() {
   if (status === "loading") {
     return <div>Loading...</div>;
   }
-
   return (
-    <div className="flex justify-between">
+    <main className={inter.className}>
+          <div className="flex justify-between">
       <div>
         <h3 className="text-3xl py-3 ml-10">
-          Welcome Back! {session?.user?.name || "Guest"}
+          {session?.user?.name || "Guest"} ได้เข้าสู่ระบบ
         </h3>
       </div>
       <div className="justify-center content-center space-x-4 mr-10 ">
@@ -49,5 +56,6 @@ export default function Taskbar() {
         </Button>
       </div>
     </div>
+    </main>
   );
 }

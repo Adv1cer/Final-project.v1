@@ -1,10 +1,15 @@
 "use client"
-import { Inter } from "next/font/google";
 import "../globals.css";
 import { AuthProvider } from "../provider";
 import IdleTimer from "../IdleTimeout";
 
-const inter = Inter({ subsets: ["latin"] });
+import { IBM_Plex_Sans_Thai } from "next/font/google";
+
+const inter = IBM_Plex_Sans_Thai({
+  subsets: ["latin"],
+  weight: "400",
+
+});
 
 export default function DashboardLayout({ children }) {
     return (

@@ -10,7 +10,7 @@ export async function middleware(request) {
 
   if (token) {
     if (pathname === "/" || pathname.toLowerCase() === "/login") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/homepage", request.url));
     }
   } else {
     if (pathname.toLowerCase().startsWith("/homepage") ||
@@ -25,5 +25,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/medicine/:path*', '/history/:path*', '/ticket/:path*'],
+  matcher: ['/dashboard/:path*','/homepage/:path*', '/medicine/:path*', '/history/:path*', '/ticket/:path*'],
 };
