@@ -16,9 +16,10 @@ export async function GET() {
     connection = await mysql.createConnection(dbConfig);
 
     const [pills] = await connection.query(`
-      SELECT p.pill_id, p.pill_name, p.dose, pt.type_name, p.status
+      SELECT p.pill_id, p.pill_name, p.dose, pt.type_name, p.status, u.unit_type
       FROM pill p
       JOIN pill_type pt ON p.type_id = pt.type_id
+      JOIN unit u ON p.unit_id = u.unit_id
     `);
 
     return NextResponse.json(pills);

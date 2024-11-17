@@ -176,113 +176,110 @@ export default function PatientForm() {
   if (!isMounted) return null;
 
   return (
-    <div>
-      <div className="flex justify-center items-center min-h-screen bg-custom">
-        <div className="bg-zinc-100 shadow-md p-8 max-w-lg w-full mb-20 form-border ">
-          <div className="text-center text-2xl font-bold mb-6 text-gray-700">
-            <h1>แบบฟอร์มนักศึกษาที่มาใช้ห้องพยาบาล</h1>
-          </div>
-          <form  onSubmit={onSubmit} className="mx-8 mt-8 mb-2">
-            <div className="mb-4">
-              <label className="block text-gray-700 text-center  font-bold text-lg">
-                ชื่อ-นามสกุล
-              </label>
-              <input
-                type="text"
-                id="student_name"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-                className="mt-1 block w-full p-2 border border-black input-border pl-4"
-                placeholder="ชื่อ-นามสกุล"
-                style={{ borderColor: "black" }}
-              />
-            </div>
-            <div className="flex gap-1 my-5">
-              <div>
-                <input
-                  type="radio"
-                  id="student"
-                  name="role"
-                  value="นักศึกษา"
-                  onChange={handleRoleChange}
-                />
-                <label htmlFor="student"> นักศึกษา</label>
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  id="staff"
-                  name="role"
-                  value="บุคลากร"
-                  onChange={handleRoleChange}
-                />
-                <label htmlFor="staff"> บุคลากรมหาลัย</label>
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  id="outsider"
-                  name="role"
-                  value="บุคคลภายนอก"
-                  onChange={handleRoleChange}
-                />
-                <label htmlFor="outsider"> บุคคลภายนอก</label>
-              </div>
-            </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 text-center font-bold text-lg">
-                เลขนักศึกษา
-              </label>
-              <input
-                type="text"
-                id="student_id"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                className="mt-1 block w-full p-2 border border-black input-border pl-4"
-                placeholder="เลขนักศึกษา"
-                style={{ borderColor: "black" }}
-              />
-            </div>
-            <div className="flex w-full flex-col gap-1 ">
-              <label className="block  text-center font-bold text-lg">
-                อาการ
-              </label>
-              <Select
-                options={options}
-                isMulti
-                value={options.filter((option) =>
-                  selectedSymptoms.includes(option.value)
-                )}
-                onChange={(selectedOptions) =>
-                  setSelectedSymptoms(
-                    selectedOptions.map((option) => option.value)
-                  )
-                }
-              />
-              {selectedSymptoms.includes(12) && (
-                <div className="mt-4">
-                  <label className="block text-gray-700 font-bold text-lg">
-                    โปรดระบุอาการอื่นๆ
-                  </label>
-                  <input
-                    type="text"
-                    value={otherSymptom}
-                    onChange={(e) => setOtherSymptom(e.target.value)}
-                    className="mt-1 block w-full p-2 border border-black input-border pl-4"
-                    placeholder="ระบุอาการอื่นๆ"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="flex justify-center mt-4">
-              <Button className="bg-blue-700 hover:bg-blue-400" type="submit">
-                ยืนยัน
-              </Button>
-            </div>
-          </form>
+      <div className="bg-zinc-100 shadow-md p-8 max-w-lg w-full form-border ">
+        <div className="text-center text-2xl font-bold mb-6 text-gray-700">
+          <h1>แบบฟอร์มนักศึกษาที่มาใช้ห้องพยาบาล</h1>
         </div>
+        <form onSubmit={onSubmit} className="mx-8 mt-8 ">
+          <div className="mb-4">
+            <label className="block text-gray-700 text-center font-bold text-lg">
+              ชื่อ-นามสกุล
+            </label>
+            <input
+              type="text"
+              id="student_name"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              className="mt-1 block w-full p-2 border border-black input-border pl-4"
+              placeholder="ชื่อ-นามสกุล"
+              style={{ borderColor: "black" }}
+            />
+          </div>
+          <div className="flex gap-1 my-5">
+            <div>
+              <input
+                type="radio"
+                id="student"
+                name="role"
+                value="นักศึกษา"
+                onChange={handleRoleChange}
+              />
+              <label htmlFor="student"> นักศึกษา</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="staff"
+                name="role"
+                value="บุคลากร"
+                onChange={handleRoleChange}
+              />
+              <label htmlFor="staff"> บุคลากรมหาลัย</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="outsider"
+                name="role"
+                value="บุคคลภายนอก"
+                onChange={handleRoleChange}
+              />
+              <label htmlFor="outsider"> บุคคลภายนอก</label>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-center font-bold text-lg">
+              เลขนักศึกษา
+            </label>
+            <input
+              type="text"
+              id="student_id"
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              className="mt-1 block w-full p-2 border border-black input-border pl-4"
+              placeholder="เลขนักศึกษา"
+              style={{ borderColor: "black" }}
+            />
+          </div>
+          <div className="flex w-full flex-col gap-1 ">
+            <label className="block  text-center font-bold text-lg">
+              อาการ
+            </label>
+            <Select
+              options={options}
+              isMulti
+              value={options.filter((option) =>
+                selectedSymptoms.includes(option.value)
+              )}
+              onChange={(selectedOptions) =>
+                setSelectedSymptoms(
+                  selectedOptions.map((option) => option.value)
+                )
+              }
+            />
+            {selectedSymptoms.includes(12) && (
+              <div className="mt-4">
+                <label className="block text-gray-700 font-bold text-lg">
+                  โปรดระบุอาการอื่นๆ
+                </label>
+                <input
+                  type="text"
+                  value={otherSymptom}
+                  onChange={(e) => setOtherSymptom(e.target.value)}
+                  className="mt-1 block w-full p-2 border border-black input-border pl-4"
+                  placeholder="ระบุอาการอื่นๆ"
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex justify-center mt-4">
+            <Button className="bg-blue-700 hover:bg-blue-400" type="submit">
+              ยืนยัน
+            </Button>
+          </div>
+        </form>
       </div>
-    </div>
   );
 }

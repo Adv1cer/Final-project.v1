@@ -660,7 +660,7 @@ export default function MedicineComponent() {
 
 
         <div className="flex justify-center items-start mt-10">
-          <div className="w-full max-w-2xl bg-white shadow-md table-rounded">
+          <div className="w-full max-w-7xl bg-white shadow-md table-rounded">
             <div className="bg-blue-800 text-white p-4 flex items-center justify-between table-rounded">
               <h1 className="text-xl font-semibold">รายชื่อยาในระบบ</h1>
 

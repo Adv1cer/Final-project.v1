@@ -68,13 +68,19 @@
 }
 
 @layer utilities {
+  .body{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
   .bg-custom {
     background-image: linear-gradient(45deg, #d2e4ff, #6a9eff, #3f5c92);
     background-size: cover, cover;
     background-position: center, center;
     background-blend-mode: overlay;
-    height: 100vh;
-    display: flex;
     justify-content: center;
     align-items: center;
   }
@@ -146,7 +152,7 @@
     border-top: 16px solid #3498db;
     width: 120px;
     height: 120px;
-    -webkit-animation: spin 2s linear infinite; /* Safari */
+    -webkit-animation: spin 2s linear infinite; 
     animation: spin 2s linear infinite;
   }
   

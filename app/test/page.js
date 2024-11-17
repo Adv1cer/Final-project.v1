@@ -1,4 +1,54 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
 export default function Test() {
+  const [pillList, setPillList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pillstocklist, setpillstocklist] = useState([]);
+  const [selectedPillId, setSelectedPillId] = useState(null);
+
+  useEffect(() => {
+    const fetchPills = async () => {
+      try {
+        const response = await fetch("/api/medicine/pill");
+        const data = await response.json();
+        setPillList(data);
+      } catch (error) {
+        console.error("Error fetching pills:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPills();
+  }, []);
+
+  useEffect(() => {
+    const fetchpillstocklist = async (pillId) => {
+      try {
+        const response = await fetch(`/api/pillstock?p=${pillId}`);
+        const data = await response.json();
+        setpillstocklist(data);
+      } catch (error) {
+        console.error("Error fetching pills:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (selectedPillId) {
+      fetchpillstocklist(selectedPillId);
+    }
+  }, [selectedPillId]);
+
+  const handleRowClick = (pillId) => {
+    setSelectedPillId(selectedPillId === pillId ? null : pillId);
+  };
+
+
+  if (loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700">
         <div className="flex items-center justify-center">
@@ -22,3 +72,120 @@ export default function Test() {
       </div>
     );
   }
+
+  return (
+    <div className="height-screen">
+      <Navbar />
+      <div className="flex-grow flex justify-center items-center bg-custom">
+        <div className="w-full max-w-7xl bg-white shadow-md table-rounded">
+          <div className="bg-blue-800 text-white p-4 flex items-center justify-between table-rounded">
+            <h1 className="text-xl font-semibold">รายชื่อยาในระบบ</h1>
+          </div>
+          <table className="border-collapse border mx-auto w-full max-w-7xl">
+            <thead>
+              <tr className="border bg-gray-200">
+                <th className="border px-4 py-2">Pill Id</th>
+                <th className="border px-4 py-2">Pill Name</th>
+                <th className="border px-4 py-2">Dose</th>
+                <th className="border px-4 py-2">Type Name</th>
+                <th className="border px-4 py-2">Unit Type</th>
+                <th className="border px-4 py-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(pillList) && pillList.length > 0 ? (
+                pillList.map((pill, index) => (
+                  <React.Fragment key={`${pill.pill_id}-${index}`}>
+                    <tr
+                      className="cursor-pointer"
+                      onClick={() => handleRowClick(pill.pill_id)}
+                    >
+                      <td className="border px-4 py-2">{pill.pill_id}</td>
+                      <td className="border px-4 py-2">{pill.pill_name}</td>
+                      <td className="border px-4 py-2">{pill.dose}</td>
+                      <td className="border px-4 py-2">{pill.type_name}</td>
+                      <td className="border px-4 py-2">{pill.unit_type}</td>
+                      <td className="border px-4 py-2">
+                        <button className="bg-yellow-400 text-white rounded px-2 py-1">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    {selectedPillId === pill.pill_id && (
+                      <tr>
+                        <td colSpan="6">
+                          <table className="border-collapse border mx-auto w-full max-w-7xl mt-2">
+                            <thead>
+                              <tr className="border bg-gray-200">
+                                <th className="border px-4 py-2">Lot Id</th>
+                                <th className="border px-4 py-2">Pill Name</th>
+                                <th className="border px-4 py-2">Dose</th>
+                                <th className="border px-4 py-2">Type Name</th>
+                                <th className="border px-4 py-2">Expire Date</th>
+                                <th className="border px-4 py-2">Total</th>
+                                <th className="border px-4 py-2">Unit Type</th>
+                                <th className="border px-4 py-2">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {pillstocklist?.map((item) => (
+                                <tr
+                                  key={item.pillstock_id}
+                                  className={`border ${
+                                    Number(item.total) <= 100
+                                      ? "bg-red-500 text-red-500"
+                                      : "bg-blue-100 text-black"
+                                  }`}
+                                >
+                                  <td className="border px-4 py-2">
+                                    {item.pillstock_id}
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    {item.pill_name}
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    {item.dose}
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    {item.type_name}
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    {item.expire
+                                      ? new Date(item.expire).toLocaleDateString()
+                                      : "N/A"}
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    {item.total}
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    {item.unit_type}
+                                  </td>
+                                  <td className="border px-4 py-2 flex justify-center">
+                                    <button className="bg-yellow-400 text-white rounded px-2 py-1">
+                                      Edit
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">
+                    currently no pill in stock
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+}
