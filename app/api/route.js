@@ -41,19 +41,19 @@ export async function POST(request) {
 
     // Insert into patientrecord table
     const insertPatientRecordSql = `
-      INSERT INTO patientrecord (patient_id, other_symptom) 
-      VALUES (?, ?)
+      INSERT INTO patientrecord (patient_id) 
+      VALUES (?)
     `;
-    const [patientRecordResult] = await connection.execute(insertPatientRecordSql, [student_id, other_symptom]);
+    const [patientRecordResult] = await connection.execute(insertPatientRecordSql, [student_id]);
     const patient_record_id = patientRecordResult.insertId;
 
     // Insert into symptomrecord table
     const insertSymptomSql = `
-      INSERT INTO symptomrecord (patientrecord_id, symptom_id) 
-      VALUES (?, ?)
+      INSERT INTO symptomrecord (patientrecord_id, symptom_id, other_symptom) 
+      VALUES (?, ?, ?)
     `;
     for (const symptom_id of symptom_ids) {
-      await connection.execute(insertSymptomSql, [patient_record_id, symptom_id]);
+      await connection.execute(insertSymptomSql, [patient_record_id, symptom_id, other_symptom]);
     }
 
     await connection.end();

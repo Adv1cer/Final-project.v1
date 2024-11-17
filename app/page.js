@@ -1,16 +1,18 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import PatientForm from "@/components/PatientForm";
 
 const HealthForm = () => {
-
   return (
     <div>
       <Navbar />
-      <PatientForm />
+      <div className="max-w-full overflow-x-hidden">
+        <PatientForm />
+      </div>
+      <Footer />
     </div>
-    
   );
 };
 

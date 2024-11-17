@@ -111,35 +111,35 @@ export default function DashboardComponent() {
     if (status === "loading") {
       return;
     }
-    fetchTickets(); 
-    const interval = setInterval(fetchTickets, 5000); 
+    fetchTickets();
+    const interval = setInterval(fetchTickets, 5000);
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, [session, status, router]);
 
   if (loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700">
-      <div className="flex items-center justify-center">
-        <svg
-          aria-hidden="true"
-          className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-          viewBox="0 0 100 101"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-            fill="currentColor"
-          />
-          <path
-            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-            fill="currentFill"
-          />
-        </svg>
+        <div className="flex items-center justify-center">
+          <svg
+            aria-hidden="true"
+            className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+            viewBox="0 0 100 101"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="currentColor"
+            />
+            <path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentFill"
+            />
+          </svg>
+        </div>
       </div>
-    </div>
-  );
+    );
   }
 
   if (error) {
@@ -255,6 +255,7 @@ export default function DashboardComponent() {
                   <th className="py-2 px-4 border-b text-center">ดำเนินการ</th>
                 </tr>
               </thead>
+              {console.log(currentActiveTodayTickets)}
               <tbody>
                 {currentActiveTodayTickets.length > 0 ? (
                   currentActiveTodayTickets.map((ticket) => (
@@ -313,45 +314,19 @@ export default function DashboardComponent() {
                             ) : (
                               <p className="ml-10">ไม่มีอาการที่บันทึกไว้</p>
                             )}
-                            {ticket.other_symptom && (
+                            {ticket.other_symptoms && (
                               <div className="ml-10 mt-2">
                                 <h3>อาการอื่นๆ:</h3>
-                                <p>{ticket.other_symptom}</p>
-                              </div>
-                            )}
-                            {ticket.pill_quantities && (
-                              <div className="ml-10 mt-2">
-                                <h3>บันทึกยา:</h3>
                                 <div className="space-y-2">
-                                  {ticket.pill_quantities
+                                  {ticket.other_symptoms
                                     .split(",")
-                                    .map((quantity, index) => (
-                                      <div key={index} className="block">
-                                        <p>
-                                          ชื่อยา:{" "}
-                                          {ticket.pill_names
-                                            ? ticket.pill_names.split(",")[
-                                                index
-                                              ]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>
-                                          รหัสสต็อกยา:{" "}
-                                          {ticket.pillstock_ids
-                                            ? ticket.pillstock_ids.split(",")[
-                                                index
-                                              ]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>
-                                          ปริมาณ : {quantity.trim()}{" "}
-                                          {ticket.unit_type}
-                                        </p>
-                                      </div>
+                                    .map((symptom, index) => (
+                                      <p key={index}>{symptom.trim()}</p>
                                     ))}
                                 </div>
                               </div>
                             )}
+
                           </div>
                           <DialogFooter>
                             <DialogClose asChild>
@@ -468,49 +443,89 @@ export default function DashboardComponent() {
                             </div>
                             <div>
                               <h3 className="ml-10 text-lg">เวลาเช็คอิน</h3>
-                              <div className="ml-16">{formatDate(ticket.datetime)}</div>
-                              
+                              <div className="ml-16">
+                                {formatDate(ticket.datetime)}
+                              </div>
                             </div>
                             <br />
                             <h3 className="ml-10 text-lg">อาการของผู้ป่วย</h3>
                             {ticket.symptom_names ? (
-                            <div className="ml-10 space-y-2 text-lg">
-                              <p className="ml-10">{ticket.symptom_names.split(",").map(symptom => symptom.trim()).join(", ")}</p>
-                            </div>
-                          ) : (
-                            <p className="ml-10 text-lg">ไม่มีอาการที่บันทึกไว้</p>
-                          )}
-                            {ticket.other_symptom && (
-                              <div className="ml-10 mt-2 text-lg">
-                                <h3>อาการอื่นๆ </h3>
-                                <p className="ml-10">{ticket.other_symptom}</p>
+                              <div className="ml-10 space-y-2 text-lg">
+                                <p className="ml-10">
+                                  {ticket.symptom_names
+                                    .split(",")
+                                    .map((symptom) => symptom.trim())
+                                    .join(", ")}
+                                </p>
+                              </div>
+                            ) : (
+                              <p className="ml-10 text-lg">
+                                ไม่มีอาการที่บันทึกไว้
+                              </p>
+                            )}
+                            {ticket.other_symptoms && (
+                              <div className="ml-10 mt-2">
+                                <h3>อาการอื่นๆ:</h3>
+                                <div className="space-y-2">
+                                  {ticket.other_symptoms
+                                    .split(",")
+                                    .map((symptom, index) => (
+                                      <p key={index}>{symptom.trim()}</p>
+                                    ))}
+                                </div>
                               </div>
                             )}
-                          {ticket.pill_quantities && (
-                            <div className="mt-2">
-                              <div className="space-y-2 bg-gray-200">
-                                <table className="border-collapse border mx-auto w-full max-w-4xl">
-                                  <thead>
-                                  <h3 className="text-xl font-semibold border bg-gray-200">บันทึกยา</h3>
-                                    <tr className="border bg-gray-200">
-                                      <th className="border px-4 py-2">Lot Id</th>
-                                      <th className="border px-4 py-2">Pill Name</th>
-                                      <th className="border px-4 py-2">Quantity</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {ticket.pill_quantities.split(",").map((quantity, index) => (
-                                      <tr key={index}>
-                                        <td className="border px-4 py-2">{ticket.pillstock_ids ? ticket.pillstock_ids.split(",")[index] : "Unknown"}</td>
-                                        <td className="border px-4 py-2">{ticket.pill_names ? ticket.pill_names.split(",")[index] : "Unknown"}</td>
-                                        <td className="border px-4 py-2">{quantity.trim()} {ticket.unit_type}</td>
+
+                            {ticket.pill_quantities && (
+                              <div className="mt-2">
+                                <div className="space-y-2 bg-gray-200">
+                                  <table className="border-collapse border mx-auto w-full max-w-4xl">
+                                    <thead>
+                                      <h3 className="text-xl font-semibold border bg-gray-200">
+                                        บันทึกยา
+                                      </h3>
+                                      <tr className="border bg-gray-200">
+                                        <th className="border px-4 py-2">
+                                          Lot Id
+                                        </th>
+                                        <th className="border px-4 py-2">
+                                          Pill Name
+                                        </th>
+                                        <th className="border px-4 py-2">
+                                          Quantity
+                                        </th>
                                       </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
+                                    </thead>
+                                    <tbody>
+                                      {ticket.pill_quantities
+                                        .split(",")
+                                        .map((quantity, index) => (
+                                          <tr key={index}>
+                                            <td className="border px-4 py-2">
+                                              {ticket.pillstock_ids
+                                                ? ticket.pillstock_ids.split(
+                                                    ","
+                                                  )[index]
+                                                : "Unknown"}
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                              {ticket.pill_names
+                                                ? ticket.pill_names.split(",")[
+                                                    index
+                                                  ]
+                                                : "Unknown"}
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                              {quantity.trim()}{" "}
+                                              {ticket.unit_type}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
                           </div>
                           <DialogFooter>
                             <DialogClose asChild>

@@ -2,9 +2,10 @@
 import "./globals.css";
 import { AuthProvider } from "./provider";
 import { Toaster } from "@/components/ui/toaster";
-import Footer from "@/components/Footer";
 import { IBM_Plex_Sans_Thai } from "next/font/google";
 import { Suspense } from "react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const inter = IBM_Plex_Sans_Thai({
   subsets: ["latin"],
@@ -14,8 +15,6 @@ const inter = IBM_Plex_Sans_Thai({
 export default function RootLayout({ children }) {
   return (
     <html>
-      <head></head>
-
       <body className={`${inter.className} bg-wave`}>
         <main>
           <Suspense fallback={<div>Loading...</div>}>
@@ -25,7 +24,6 @@ export default function RootLayout({ children }) {
             </AuthProvider>
           </Suspense>
         </main>
-        <Footer />
       </body>
     </html>
   );
