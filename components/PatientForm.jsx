@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -22,23 +22,22 @@ const options = [
 ];
 
 export default function PatientForm() {
-  const ref = useRef(null);
   const { data: session, status } = useSession();
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (status === 'loading') {
-        setLoading(true);
-        return;
+    if (status === "loading") {
+      setLoading(true);
+      return;
     }
 
     setLoading(false);
 
     if (session) {
-        router.push("/homepage");
+      router.push("/homepage");
     }
-}, [session, status, router]);
+  }, [session, status, router]);
 
   const [isMounted, setIsMounted] = useState(false);
   const [studentId, setStudentId] = useState("");
@@ -136,12 +135,7 @@ export default function PatientForm() {
             duration: 2000,
           });
         }
-        ref.current.reset();
-        setStudentName("");
-        setStudentId("");
-        setRole("");
-        setselectedSymptoms([]);
-        setOtherSymptom("");
+        location.reload();
       } else {
         console.log("Failed to submit data");
       }
@@ -156,7 +150,7 @@ export default function PatientForm() {
 
   if (loading) {
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700 ">
+      <div className="fixed inset-0 flex items-center justify-center bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700 ">
         <div className="flex items-center justify-center">
           <svg
             aria-hidden="true"
@@ -177,8 +171,7 @@ export default function PatientForm() {
         </div>
       </div>
     );
-}
-
+  }
 
   if (!isMounted) return null;
 
@@ -189,7 +182,7 @@ export default function PatientForm() {
           <div className="text-center text-2xl font-bold mb-6 text-gray-700">
             <h1>แบบฟอร์มนักศึกษาที่มาใช้ห้องพยาบาล</h1>
           </div>
-          <form ref={ref} onSubmit={onSubmit} className="mx-8 mt-8 mb-2">
+          <form  onSubmit={onSubmit} className="mx-8 mt-8 mb-2">
             <div className="mb-4">
               <label className="block text-gray-700 text-center  font-bold text-lg">
                 ชื่อ-นามสกุล
@@ -256,12 +249,16 @@ export default function PatientForm() {
                 อาการ
               </label>
               <Select
-                className=" text-gray-500 text-sm "
                 options={options}
-                placeholder="เลือกอาการของคุณ"
-                noOptionsMessage={() => "no results found"}
-                onChange={handleSymptomChange}
                 isMulti
+                value={options.filter((option) =>
+                  selectedSymptoms.includes(option.value)
+                )}
+                onChange={(selectedOptions) =>
+                  setSelectedSymptoms(
+                    selectedOptions.map((option) => option.value)
+                  )
+                }
               />
               {selectedSymptoms.includes(12) && (
                 <div className="mt-4">
