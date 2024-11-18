@@ -84,13 +84,19 @@ export default function PatientForm() {
     event.preventDefault();
 
     const confirmMessage = `
-      ยืนยันข้อมูล:
-      ชื่อ-นามสกุล: ${studentName}
-      รหัสนักศึกษา: ${studentId}
-      สถานะ: ${role}
-      อาการ: ${selectedSymptoms.join(", ")}
-      ${selectedSymptoms.includes(12) ? `หมายเหตุ: ${otherSymptom}` : ""}
-    `;
+    ยืนยันข้อมูล:
+    ชื่อ-นามสกุล: ${studentName}
+    รหัสนักศึกษา: ${studentId}
+    สถานะ: ${role}
+    อาการ: ${selectedSymptoms
+      .map(symptom => options.find(option => option.value === symptom)?.label)
+      .join(", ")}
+    ${
+      selectedSymptoms.includes(12) 
+      ? `หมายเหตุ: ${otherSymptom}` 
+      : ""
+    }
+  `;
 
     if (!window.confirm(confirmMessage)) return;
 
