@@ -289,7 +289,7 @@ export default function DashboardComponent() {
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-2 py-1">
-                          <div>
+                            <div>
                               <h3 className="ml-10 text-lg">ชื่อ-นามสกุล</h3>
                               <div className="ml-16">{ticket.patient_name}</div>
                             </div>
@@ -330,20 +330,19 @@ export default function DashboardComponent() {
                                 </div>
                               </div>
                             )}
-
                           </div>
                           <DialogFooter>
-                            <DialogClose asChild>
-                              <Button type="button" variant="secondary">
-                                ปิด
-                              </Button>
-                            </DialogClose>
                             <Button
                               type="button"
                               onClick={() => handleTicket(ticket)}
                             >
                               สั่งยา
                             </Button>
+                            <DialogClose asChild>
+                              <Button type="button" className="destructive px-6">
+                                ปิด
+                              </Button>
+                            </DialogClose>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
@@ -481,16 +480,13 @@ export default function DashboardComponent() {
                             )}
 
                             {ticket.pill_quantities && (
-                              <div className="mt-2">
-                                <div className="space-y-2 bg-blue-800 table-rounded">
-                                  <table className="border-collapse border mx-auto w-full max-w-4xl table-rounded">
+                              <div className="mt-6">
+                                <div className="space-y-2">
+                                  <table className="border-collapse border mx-auto w-full max-w-4xl">
                                     <thead>
-                                      <h3 className="text-xl font-semibold py-2 text-white bg-blue-800 text-center">
-                                        บันทึกยา
-                                      </h3>
-                                      <tr className="border bg-gray-200">
+                                      <tr className="border bg-blue-800 text-white">
                                         <th className="border px-4 py-2">
-                                        ไอดียา
+                                          ไอดียา
                                         </th>
                                         <th className="border px-4 py-2">
                                           ชื่อยา
@@ -504,7 +500,10 @@ export default function DashboardComponent() {
                                       {ticket.pill_quantities
                                         .split(",")
                                         .map((quantity, index) => (
-                                          <tr key={index}>
+                                          <tr
+                                            key={index}
+                                            className="border bg-blue-100"
+                                          >
                                             <td className="border px-4 py-2">
                                               {ticket.pillstock_ids
                                                 ? ticket.pillstock_ids.split(
@@ -533,7 +532,11 @@ export default function DashboardComponent() {
                           </div>
                           <DialogFooter>
                             <DialogClose asChild>
-                              <Button className="text-white mx-4" type="button" variant="destructive">
+                              <Button
+                                className="text-white mx-4 px-6"
+                                type="button"
+                                variant="destructive"
+                              >
                                 ปิด
                               </Button>
                             </DialogClose>

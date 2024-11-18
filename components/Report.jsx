@@ -342,14 +342,13 @@ function Report() {
   const currentDayOfWeekChart = dayNamesThai[todayChart.getDay()];
   const currentYearChart = todayChart.getFullYear();
   const lastFiveYearsChart = currentYearChart - 5;
-  
+
   const currentYearThai = currentYearChart + 543;
   const lastFiveYearsChartThai = currentYearThai - 5;
 
-
   if (loading) {
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700">
+      <div className="fixed inset-0 flex items-center justify-center bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700">
         <div className="flex items-center justify-center">
           <svg
             aria-hidden="true"
@@ -370,8 +369,7 @@ function Report() {
         </div>
       </div>
     );
-}
-
+  }
 
   return (
     <MantineProvider>
@@ -411,9 +409,7 @@ function Report() {
             <h3 className="text-xl whitespace-nowrap text-center px-20">
               ผู้ป่วย
             </h3>
-            <h3 className="text-xl whitespace-nowrap text-center">
-              รายเดือน
-            </h3>
+            <h3 className="text-xl whitespace-nowrap text-center">รายเดือน</h3>
             <div className="text-2xl">
               {error ? (
                 <span className="text-red-500">{error}</span>
@@ -426,10 +422,8 @@ function Report() {
             <h3 className="text-xl whitespace-nowrap text-center px-20">
               ผู้ป่วย
             </h3>
-            <h3 className="text-xl whitespace-nowrap text-center">
-            รายปี
-            </h3>
-            <div className="text-2xl ">
+            <h3 className="text-xl whitespace-nowrap text-center">รายปี</h3>
+            <div className="text-2xl">
               {error ? (
                 <span className="text-red-500">{error}</span>
               ) : (
@@ -553,36 +547,35 @@ function Report() {
               </CardContent>
             </Card>
           </div>
-          <div className="bg-white w-full sm:w-2/3 md:w-1/2 lg:w-1/3 flex flex-col items-center display-border shadow-inner drop-shadow-md px-10 py-4">
-            <h3 className="text-xl whitespace-nowrap text-center">
-              ยาที่จ่ายในเดือน
-            </h3>
-            <h3 className="text-xl whitespace-nowrap text-center">
-              {currentMonth} {currentYear}
-            </h3>
-            <div className="text-lg mt-2">
-              {topPills.length > 0 ? (
-                (() => {
-                  const pillMap = topPills.reduce((acc, stat) => {
-                    if (!acc[stat.pill_name]) {
-                      acc[stat.pill_name] = 0;
-                    }
-                    acc[stat.pill_name] += stat.count;
-                    return acc;
-                  }, {});
-
-                  return Object.entries(pillMap).map(
-                    ([pill_name, count], index) => (
-                      <div key={index}>
-                        {pill_name} {count} ครั้ง
-                      </div>
-                    )
-                  );
-                })()
-              ) : (
-                <div>No data available</div>
-              )}
+        </div>
+        <div className="flex flex-col items-center items-start mt-10">
+          <div className="w-full max-w-xl bg-white shadow-md table-rounded">
+            <div className="bg-blue-800 text-white p-4 flex items-center justify-between table-rounded">
+              <h3 className="text-xl font-semibold">ยาที่จ่ายในเดือน</h3>
+              <h3 className="text-xl whitespace-nowrap text-center">
+                {currentMonth} {currentYear}
+              </h3>
             </div>
+            <table className="border-collapse border mx-auto w-full max-w-7xl">
+              <thead>
+                <tr className="border bg-gray-200">
+                  <th className="border px-4 py-2">ไอดียา</th>
+                  <th className="border px-4 py-2">ชื่อยา</th>
+                  <th className="border px-4 py-2">โดส</th>
+                  <th className="border px-4 py-2">ครั้ง</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pillStats.map((pill) => (
+                  <tr key={pill.pillstock_id} className="border">
+                    <td className="border px-4 py-2">{pill.pillstock_id}</td>
+                    <td className="border px-4 py-2">{pill.pill_name}</td>
+                    <td className="border px-4 py-2">{pill.dose}</td>
+                    <td className="border px-4 py-2">{pill.count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

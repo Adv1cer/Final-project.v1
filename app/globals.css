@@ -122,11 +122,17 @@
     cursor: wait;
   }
 
+  .pilltable{
+    background-color: #3498db;
+    border-radius: 2px;
+    border-color: #e62e00;
+  }
+
   .destructive {
     border-color: #e62e00;
     background-color: #e62e00 !important; /* This would override the color defined in toast.jsx */
     color:#fff;
-    border-radius: 10px;
+    border-radius: 6px;
   }
 
   .green_button{

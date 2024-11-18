@@ -36,16 +36,17 @@ export async function GET() {
     `, [startOfWeek.toISOString().slice(0, 19).replace('T', ' ')]);
 
     const [pillStats] = await connection.query(`
-      SELECT ps.pillstock_id, COUNT(pr.pillstock_id) as count, p.pill_name
+      SELECT ps.pillstock_id, COUNT(pr.pillstock_id) as count, p.pill_name, p.dose
       FROM pillrecord pr
       JOIN patientrecord prd ON pr.patientrecord_id = prd.patientrecord_id
       JOIN pillstock ps ON pr.pillstock_id = ps.pillstock_id
       JOIN pill p ON ps.pill_id = p.pill_id
       WHERE prd.datetime >= ? AND prd.datetime < ?
-      GROUP BY ps.pillstock_id, p.pill_name
+      GROUP BY ps.pillstock_id, p.pill_name, p.dose
       ORDER BY count DESC
-      LIMIT 10
+      LIMIT 7
     `, [startOfMonth.toISOString().slice(0, 19).replace('T', ' '), endOfMonth.toISOString().slice(0, 19).replace('T', ' ')]);
+    
 
     const todayDate = new Date();
     const startTime = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), 0, 0, 0);
