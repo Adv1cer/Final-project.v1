@@ -376,12 +376,15 @@ function Report() {
   return (
     <MantineProvider>
       <div className="bg-gray-100">
-        <div className="flex flex-wrap gap-4 justify-center py-4 bg-gray-100">
-          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
-            <h3 className="text-xl whitespace-nowrap text-center">
-              ผู้ใช้รายวัน
+        <div className="flex flex-wrap gap-4 justify-center  py-4 bg-gray-100">
+          <div className="bg-white shadow-md display-border rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center px-20">
+              ผู้ป่วย
             </h3>
-            <div className="text-2xl mt-4">
+            <h3 className="text-xl whitespace-nowrap text-center px-20">
+              รายวัน
+            </h3>
+            <div className="text-2xl">
               {error ? (
                 <span className="text-red-500">{error}</span>
               ) : (
@@ -389,11 +392,14 @@ function Report() {
               )}
             </div>
           </div>
-          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
-            <h3 className="text-xl whitespace-nowrap text-center">
-              ผู้ใช้รายสัปดาห์
+          <div className="bg-white shadow-md display-border rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center px-20">
+              ผู้ป่วย
             </h3>
-            <div className="text-2xl mt-4">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              รายสัปดาห์
+            </h3>
+            <div className="text-2xl">
               {error ? (
                 <span className="text-red-500">{error}</span>
               ) : (
@@ -401,11 +407,14 @@ function Report() {
               )}
             </div>
           </div>
-          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
-            <h3 className="text-xl whitespace-nowrap text-center">
-              ผู้ใช้รายเดือน
+          <div className="bg-white shadow-md display-border rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center px-20">
+              ผู้ป่วย
             </h3>
-            <div className="text-2xl mt-4">
+            <h3 className="text-xl whitespace-nowrap text-center">
+              รายเดือน
+            </h3>
+            <div className="text-2xl">
               {error ? (
                 <span className="text-red-500">{error}</span>
               ) : (
@@ -413,11 +422,14 @@ function Report() {
               )}
             </div>
           </div>
-          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
-            <h3 className="text-xl whitespace-nowrap text-center">
-              ผู้ใช้รายปี
+          <div className="bg-white shadow-md display-border rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
+            <h3 className="text-xl whitespace-nowrap text-center px-20">
+              ผู้ป่วย
             </h3>
-            <div className="text-2xl mt-4">
+            <h3 className="text-xl whitespace-nowrap text-center">
+            รายปี
+            </h3>
+            <div className="text-2xl ">
               {error ? (
                 <span className="text-red-500">{error}</span>
               ) : (

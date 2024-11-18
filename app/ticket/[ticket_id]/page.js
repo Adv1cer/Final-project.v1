@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { Button } from '@/components/ui/button';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Taskbar from '@/components/Taskbar';
 
 export default function TicketPage() {
     const { data: session, status } = useSession();
@@ -167,6 +168,7 @@ export default function TicketPage() {
     return (
         <main>
             <Navbar session={session} />
+            <Taskbar />
             <ToastContainer />
             <div>
                 <div className="flex min-h-screen bg-gray-100 grid col-3 gap-2">

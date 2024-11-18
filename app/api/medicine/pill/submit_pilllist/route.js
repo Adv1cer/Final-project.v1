@@ -9,25 +9,36 @@ const dbConfig = {
 };
 
 export async function POST(req) {
-  const { pillName, dose, typeName, status } = await req.json();
+  const { pillName, dose, typeName, unitType } = await req.json();  // no need to pass status anymore
 
   let connection;
 
   try {
-    // Initialize the connection
     connection = await mysql.createConnection(dbConfig);
     await connection.beginTransaction();
 
-    // Fetch the type_id based on typeName from the pill_type table
-    const [typeResult] = await connection.query('SELECT type_id FROM pill_type WHERE type_name = ?', [typeName]);
-    
+    const [typeResult] = await connection.query(
+      'SELECT type_id FROM pill_type WHERE type_name = ?',
+      [typeName]
+    );
+
     if (typeResult.length === 0) {
       return NextResponse.json({ message: 'Invalid type name' }, { status: 400 });
     }
-  
+
     const typeId = typeResult[0].type_id;
 
-    // Check if the pill already exists
+    const [unitResult] = await connection.query(
+      'SELECT unit_id FROM unit WHERE unit_type = ?',
+      [unitType]
+    );
+
+    if (unitResult.length === 0) {
+      return NextResponse.json({ message: 'Invalid unit type' }, { status: 400 });
+    }
+
+    const unitId = unitResult[0].unit_id;
+
     const [existingPill] = await connection.execute(
       'SELECT pill_id FROM pill WHERE pill_name = ?',
       [pillName]
@@ -36,21 +47,19 @@ export async function POST(req) {
     let pillId;
 
     if (existingPill.length > 0) {
-      // Pill already exists, use the existing pill_id
       pillId = existingPill[0].pill_id;
     } else {
-      // Pill does not exist, insert a new record
       const [pillResult] = await connection.execute(
-        'INSERT INTO pill (pill_name, dose, type_id, status) VALUES (?, ?, ?, ?)',
-        [pillName, dose, typeId, status]
+        'INSERT INTO pill (pill_name, dose, type_id, unit_id) VALUES (?, ?, ?, ?)',  // No need for status here
+        [pillName, dose, typeId, unitId]
       );
       pillId = pillResult.insertId;
     }
 
     await connection.commit();
-    return NextResponse.json({ message: 'Data saved successfully' }, { status: 200 });
+    return NextResponse.json({ message: 'Data saved successfully', pillId }, { status: 200 });
   } catch (err) {
-    await connection.rollback();
+    if (connection) await connection.rollback();
     console.error('Error saving data:', err);
     return NextResponse.json({ error: 'Failed to save data' }, { status: 500 });
   } finally {

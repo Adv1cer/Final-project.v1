@@ -20,7 +20,6 @@ export async function GET() {
       FROM pill p
       JOIN pill_type pt ON p.type_id = pt.type_id
       JOIN unit u ON p.unit_id = u.unit_id
-      ORDER BY p.pill_id ASC
     `);
 
     return NextResponse.json(pills);

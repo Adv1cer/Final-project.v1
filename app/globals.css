@@ -33,6 +33,8 @@
 
   /* Existing styles */
 
+  
+
   body {
     @apply bg-background text-foreground;
   }
@@ -116,10 +118,20 @@
     border-radius: 10px;
   }
 
+  .cursor-wait {
+    cursor: wait;
+  }
+
   .destructive {
-    border-color: red;
-    background-color: red !important; /* This would override the color defined in toast.jsx */
+    border-color: #e62e00;
+    background-color: #e62e00 !important; /* This would override the color defined in toast.jsx */
     color:#fff;
+    border-radius: 10px;
+  }
+
+  .green_button{
+    background-color: green;
+    color: white;
     border-radius: 10px;
   }
 

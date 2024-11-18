@@ -236,10 +236,10 @@ export default function DashboardComponent() {
         <Display />
         <div className="flex flex-col items-center bg-gray-100 text-center overflow-y-auto min-h-screen p-4">
           <div className="bg-white w-full max-w-4xl rounded shadow-md mt-4">
-            <div className="bg-blue-900 text-white text-lg font-semibold p-4 rounded-t-md">
+            <div className="bg-blue-900 text-white text-lg font-semibold p-4 table-rounded">
               รายชื่อผู้ป่วยรอจ่ายยา
             </div>
-            <table className="min-w-full bg-white">
+            <table className="min-w-full bg-white ">
               <thead>
                 <tr>
                   <th className="py-2 px-4 border-b text-center">
@@ -275,13 +275,13 @@ export default function DashboardComponent() {
                       <td className="py-2 px-4 border-b text-center">
                         {new Date(ticket.datetime).toLocaleString()}
                       </td>
-                      <Dialog>
+                      <Dialog className="form-border">
                         <DialogTrigger asChild>
                           <td className="py-2 px-4 border-b text-blue-700 cursor-pointer text-center">
                             สั่งยา
                           </td>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px] display-border">
+                        <DialogContent className="sm:max-w-[425px]  ">
                           <DialogHeader>
                             <DialogTitle>Patient Ticket</DialogTitle>
                             <DialogDescription>
@@ -289,20 +289,24 @@ export default function DashboardComponent() {
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-2 py-1">
-                            <h3 className="ml-10">
-                              ชื่อ: {ticket.patient_name}
-                            </h3>
-                            <h3 className="ml-10">
-                              รหัสนักศึกษา: {ticket.patient_id}
-                            </h3>
-                            <h3 className="ml-10">
-                              เวลาเช็คอิน:{" "}
-                              {new Date(ticket.datetime).toLocaleString()}
-                            </h3>
+                          <div>
+                              <h3 className="ml-10 text-lg">ชื่อ-นามสกุล</h3>
+                              <div className="ml-16">{ticket.patient_name}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">รหัสนักศึกษา</h3>
+                              <div className="ml-16">{ticket.patient_id}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">เวลาเช็คอิน</h3>
+                              <div className="ml-16">
+                                {formatDate(ticket.datetime)}
+                              </div>
+                            </div>
                             <br />
-                            <h3 className="ml-10">อาการของผู้ป่วย</h3>
+                            <h3 className="ml-10 text-lg">อาการของผู้ป่วย</h3>
                             {ticket.symptom_names ? (
-                              <div className="ml-10 space-y-2">
+                              <div className="ml-16 space-y-2">
                                 {ticket.symptom_names
                                   .split(",")
                                   .map((symptom, index) => (
@@ -316,7 +320,7 @@ export default function DashboardComponent() {
                             )}
                             {ticket.other_symptoms && (
                               <div className="ml-10 mt-2">
-                                <h3>อาการอื่นๆ:</h3>
+                                <h3>หมายเหตุ</h3>
                                 <div className="space-y-2">
                                   {ticket.other_symptoms
                                     .split(",")
@@ -381,7 +385,7 @@ export default function DashboardComponent() {
           </div>
 
           <div className="bg-white w-full max-w-4xl rounded shadow-md mt-4 ">
-            <div className="bg-green-900 text-white text-lg font-semibold p-4 rounded-t-md">
+            <div className="bg-green-900 text-white text-lg font-semibold p-4 table-rounded">
               รายชื่อผู้ป่วยจ่ายยาเเล้ว
             </div>
             <table className="min-w-full bg-white opacity-50">
@@ -465,8 +469,8 @@ export default function DashboardComponent() {
                             )}
                             {ticket.other_symptoms && (
                               <div className="ml-10 mt-2">
-                                <h3>อาการอื่นๆ:</h3>
-                                <div className="space-y-2">
+                                <h3>หมายเหตุ</h3>
+                                <div className="space-y-2 ml-10">
                                   {ticket.other_symptoms
                                     .split(",")
                                     .map((symptom, index) => (
@@ -478,21 +482,21 @@ export default function DashboardComponent() {
 
                             {ticket.pill_quantities && (
                               <div className="mt-2">
-                                <div className="space-y-2 bg-gray-200">
-                                  <table className="border-collapse border mx-auto w-full max-w-4xl">
+                                <div className="space-y-2 bg-blue-800 table-rounded">
+                                  <table className="border-collapse border mx-auto w-full max-w-4xl table-rounded">
                                     <thead>
-                                      <h3 className="text-xl font-semibold border bg-gray-200">
+                                      <h3 className="text-xl font-semibold py-2 text-white bg-blue-800 text-center">
                                         บันทึกยา
                                       </h3>
                                       <tr className="border bg-gray-200">
                                         <th className="border px-4 py-2">
-                                          Lot Id
+                                        ไอดียา
                                         </th>
                                         <th className="border px-4 py-2">
-                                          Pill Name
+                                          ชื่อยา
                                         </th>
                                         <th className="border px-4 py-2">
-                                          Quantity
+                                          จำนวน
                                         </th>
                                       </tr>
                                     </thead>
@@ -529,16 +533,10 @@ export default function DashboardComponent() {
                           </div>
                           <DialogFooter>
                             <DialogClose asChild>
-                              <Button type="button" variant="secondary">
+                              <Button className="text-white mx-4" type="button" variant="destructive">
                                 ปิด
                               </Button>
                             </DialogClose>
-                            <Button
-                              type="button"
-                              onClick={() => handleTicket(ticket)}
-                            >
-                              ดูข้อมูล
-                            </Button>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>

@@ -30,6 +30,20 @@ const fetchTickets = async (setTickets, setError) => {
   }
 };
 
+const formatDate = (datetime) => {
+  const date = new Date(datetime);
+  const dateString = date.toLocaleDateString("th-TH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const timeString = date.toLocaleTimeString("th-TH", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return `${dateString}\nเวลา ${timeString}`;
+};
+
 export default function HistoryComponent() {
   const [tickets, setTickets] = useState([]);
   const [error, setError] = useState(null);
@@ -57,18 +71,8 @@ export default function HistoryComponent() {
         <div className="min-h-screen bg-gray-100 flex justify-center p-8">
           <div className="w-full max-w-5xl bg-white shadow-md rounded-lg">
             <div className="bg-blue-800 text-white p-4 flex items-center justify-between rounded-t-lg">
-              <h1 className="text-xl font-semibold">ประวัตินักศึกษา</h1>
+              <h1 className="text-xl font-semibold mx-10">ประวัตินักศึกษา</h1>
               <div className="flex items-center space-x-4">
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายวัน
-                </button>
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายสัปดาห์
-                </button>
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายเดือน
-                </button>
-
                 <input
                   type="text"
                   placeholder="search"
@@ -114,74 +118,110 @@ export default function HistoryComponent() {
                       <td className="py-2 px-4 border-b text-center">
                         {new Date(ticket.datetime).toLocaleString()}
                       </td>
-                      <Dialog>
+                      <Dialog className="">
                         <DialogTrigger asChild>
                           <td className="py-2 px-4 border-b text-blue-700 cursor-pointer text-center">
                             ดูข้อมูล
                           </td>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="w-full">
                           <DialogHeader>
                             <DialogTitle>Patient Ticket</DialogTitle>
                             <DialogDescription>
                               Status: Finished
                             </DialogDescription>
                           </DialogHeader>
-                          <div className="grid gap-2 py-1">
-                            <h3 className="ml-10">
-                              Name: {ticket.patient_name}
-                            </h3>
-                            <h3 className="ml-10">
-                              Student ID: {ticket.patient_id}
-                            </h3>
-                            <h3 className="ml-10">
-                              Check-in Time:{" "}
-                              {new Date(ticket.datetime).toLocaleString()}
-                            </h3>
+                          <div className="grid gap-1">
+                            <div>
+                              <h3 className="ml-10 text-lg">ชื่อ-นามสกุล</h3>
+                              <div className="ml-16">{ticket.patient_name}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">รหัสนักศึกษา</h3>
+                              <div className="ml-16">{ticket.patient_id}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">เวลาเช็คอิน</h3>
+                              <div className="ml-16">
+                                {formatDate(ticket.datetime)}
+                              </div>
+                            </div>
                             <br />
-                            <h3 className="ml-10">Patient Symptoms</h3>
+                            <h3 className="ml-10 text-lg">อาการของผู้ป่วย</h3>
                             {ticket.symptom_names ? (
-                              <div className="ml-10 space-y-2">
-                                {ticket.symptom_names
-                                  .split(",")
-                                  .map((symptom, index) => (
-                                    <p key={index} className="block">
-                                      {symptom.trim()}
-                                    </p>
-                                  ))}
+                              <div className="ml-10 space-y-2 text-lg">
+                                <p className="ml-10">
+                                  {ticket.symptom_names
+                                    .split(",")
+                                    .map((symptom) => symptom.trim())
+                                    .join(", ")}
+                                </p>
                               </div>
                             ) : (
-                              <p className="ml-10">No symptoms recorded</p>
+                              <p className="ml-10 text-lg">
+                                ไม่มีอาการที่บันทึกไว้
+                              </p>
                             )}
-                            {ticket.other_symptom && (
+                            {ticket.other_symptoms && (
                               <div className="ml-10 mt-2">
-                                <h3>Other Symptoms:</h3>
-                                <p>{ticket.other_symptom}</p>
+                                <h3>หมายเหตุ</h3>
+                                <div className="space-y-2 ml-10">
+                                  {ticket.other_symptoms
+                                    .split(",")
+                                    .map((symptom, index) => (
+                                      <p key={index}>{symptom.trim()}</p>
+                                    ))}
+                                </div>
                               </div>
                             )}
+
                             {ticket.pill_quantities && (
-                              <div className="ml-10 mt-2">
-                                <h3>Pill Records:</h3>
-                                <div className="space-y-2">
-                                  {ticket.pill_quantities
-                                    .split(",")
-                                    .map((quantity, index) => (
-                                      <div key={index} className="block">
-                                        <p>
-                                          Pill Name:{" "}
-                                          {ticket.pill_names
-                                            ? ticket.pill_names.split(",")[index]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>
-                                          Pill Stock ID:{" "}
-                                          {ticket.pillstock_ids
-                                            ? ticket.pillstock_ids.split(",")[index]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>Quantity: {quantity.trim()}</p>
-                                      </div>
-                                    ))}
+                              <div className="mt-2">
+                                <div className="space-y-2 bg-blue-800">
+                                  <table className="border-collapse border mx-auto w-full max-w-4xl">
+                                    <thead>
+                                      <h3 className="text-xl font-semibold py-2 text-white bg-blue-800 text-center">
+                                        บันทึกยา
+                                      </h3>
+                                      <tr className="border bg-gray-200">
+                                        <th className="border px-4 py-2">
+                                        ไอดียา
+                                        </th>
+                                        <th className="border px-4 py-2">
+                                          ชื่อยา
+                                        </th>
+                                        <th className="border px-4 py-2">
+                                          จำนวน
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {ticket.pill_quantities
+                                        .split(",")
+                                        .map((quantity, index) => (
+                                          <tr key={index}>
+                                            <td className="border px-4 py-2">
+                                              {ticket.pillstock_ids
+                                                ? ticket.pillstock_ids.split(
+                                                    ","
+                                                  )[index]
+                                                : "Unknown"}
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                              {ticket.pill_names
+                                                ? ticket.pill_names.split(",")[
+                                                    index
+                                                  ]
+                                                : "Unknown"}
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                              {quantity.trim()}{" "}
+                                              {ticket.unit_type}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                    </tbody>
+                                  </table>
                                 </div>
                               </div>
                             )}
@@ -189,7 +229,7 @@ export default function HistoryComponent() {
                           <DialogFooter>
                             <DialogClose asChild>
                               <Button type="button" variant="secondary">
-                                Close
+                                ปิด
                               </Button>
                             </DialogClose>
                           </DialogFooter>

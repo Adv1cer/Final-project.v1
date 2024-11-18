@@ -10,15 +10,17 @@ const dbConfig = {
 
 export async function PUT(req, { params }) {
   const { pill_id } = params;
-  const { pillName, dose, typeName, status } = await req.json();
+  const { pillName, dose, typeName, unitId, status } = await req.json(); // รับค่า pillName, dose, typeName, unitId และ status
 
   let connection;
 
   try {
     connection = await mysql.createConnection(dbConfig);
 
-    let query, queryParams;
+    let query;
+    let queryParams;
 
+    // เช็คว่า status เป็น 0 หรือ 1
     if (status === 0 || status === 1) {
       query = `
         UPDATE pill
@@ -27,15 +29,16 @@ export async function PUT(req, { params }) {
       `;
       queryParams = [status, pill_id];
     } else {
-      // Update all columns except status
+      // ถ้า status ไม่ใช่ 0 หรือ 1 ก็จะทำการอัปเดต pill_name, dose, type_name, และ unit_id
       query = `
         UPDATE pill
-        SET pill_name = ?, dose = ?, type_id = (SELECT type_id FROM pill_type WHERE type_name = ?)
+        SET pill_name = ?, dose = ?, type_id = (SELECT type_id FROM pill_type WHERE type_name = ?), unit_id = ?
         WHERE pill_id = ?
       `;
-      queryParams = [pillName, dose, typeName, pill_id];
+      queryParams = [pillName, dose, typeName, unitId, pill_id];
     }
 
+    // ทำการ execute คำสั่ง SQL
     const [result] = await connection.query(query, queryParams);
 
     if (result.affectedRows === 0) {
