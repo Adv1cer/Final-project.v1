@@ -435,7 +435,7 @@ function Report() {
               )}
             </div>
           </div>
-          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
+          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2 display-border">
             <h3 className="text-xl whitespace-nowrap text-center">
               ผู้ใช้รายสัปดาห์
             </h3>
@@ -447,7 +447,7 @@ function Report() {
               )}
             </div>
           </div>
-          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
+          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2 display-border">
             <h3 className="text-xl whitespace-nowrap text-center">
               ผู้ใช้รายเดือน
             </h3>
@@ -459,7 +459,7 @@ function Report() {
               )}
             </div>
           </div>
-          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2">
+          <div className="bg-white shadow-md rounded-lg flex flex-col justify-center items-center w-full sm:w-1/4 md:w-1/6 lg:w-1/12 h-full py-2 display-border">
             <h3 className="text-xl whitespace-nowrap text-center">
               ผู้ใช้รายปี
             </h3>
@@ -474,7 +474,7 @@ function Report() {
         </div>
 
         <div className="flex flex-wrap w-full mx-4 gap-4 py-6 bg-gray-100 justify-center pr-10">
-          <div className="bg-white w-full sm:w-2/3 md:w-1/2 lg:w-1/3 flex flex-col items-center display-border shadow-inner drop-shadow-md px-4 py-4">
+          <div className="bg-white w-full sm:w-2/3 md:w-1/2 lg:w-1/3 flex flex-col items-center display-border shadow-inner drop-shadow-md px-4 py-4 display-border">
             <div className="flex justify-end w-full">
             <Select
         value={selectedTimeOption}
