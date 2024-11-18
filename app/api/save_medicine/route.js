@@ -13,24 +13,10 @@ export async function POST(req) {
   await connection.beginTransaction();
 
   try {
-    // ถ้ามีชื่อยาอยู่เเล้วจะไม่เเอดเข้าระบบ
-    // const [existingPill] = await connection.execute(
-    //   'SELECT pill_id FROM pill WHERE pill_name = ?',
-    //   [pillName]
-    // );
-
-    // // If pill already exists, return an error
-    // if (existingPill.length > 0) {
-    //   return new Response(
-    //     JSON.stringify({ error: "Pill already exists" }),
-    //     { status: 400 }
-    //   );
-    // }
-
-    // ตรวจสอบว่า typeName ที่ได้รับมาคือ type_id หรือ type_name
+    // Check if typeName is valid
     const [typeExists] = await connection.execute(
       'SELECT type_id FROM pill_type WHERE type_id = ?',
-      [typeName]  // รับค่าที่เป็น type_id
+      [typeName]  // Assuming typeName is actually type_id
     );
 
     if (typeExists.length === 0) {
@@ -53,23 +39,43 @@ export async function POST(req) {
       );
     }
 
-    // If both typeName and unit are valid, insert the new pill
-    const [pillResult] = await connection.execute(
-      'INSERT INTO pill (pill_name, dose, type_id, unit_id, status) VALUES (?, ?, ?, ?, 1)',
-      [pillName, dose, typeExists[0].type_id, unitExists[0].unit_id]
+    const typeId = typeExists[0].type_id;
+    const unitId = unitExists[0].unit_id;
+
+    // Check if the pill already exists with the same pillName, dose, typeId, and unitId
+    const [existingPill] = await connection.execute(
+      'SELECT pill_id FROM pill WHERE pill_name = ? AND dose = ? AND type_id = ? AND unit_id = ?',
+      [pillName, dose, typeId, unitId]
     );
 
-    const pillId = pillResult.insertId;
+    let pillId;
+
+    if (existingPill.length > 0) {
+      // Pill already exists, update its status to 1
+      pillId = existingPill[0].pill_id;
+      await connection.execute(
+        'UPDATE pill SET status = 1 WHERE pill_id = ?',
+        [pillId]
+      );
+    } else {
+      // Pill does not exist, insert a new record
+      const [pillResult] = await connection.execute(
+        'INSERT INTO pill (pill_name, dose, type_id, unit_id, status) VALUES (?, ?, ?, ?, 1)',
+        [pillName, dose, typeId, unitId]
+      );
+      pillId = pillResult.insertId;
+    }
 
     await connection.commit();
     return new Response(
-      JSON.stringify({ message: 'Pill added successfully', pillId }),
+      JSON.stringify({ message: 'Pill added or updated successfully', pillId }),
       { status: 200 }
     );
   } catch (err) {
     await connection.rollback();
+    console.error("Error saving data:", err); // Log the error details
     return new Response(
-      JSON.stringify({ error: 'Failed to add pill' }),
+      JSON.stringify({ error: 'Failed to add or update pill' }),
       { status: 500 }
     );
   } finally {

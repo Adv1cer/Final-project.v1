@@ -697,7 +697,8 @@ const currentPillStock = filteredPillStock.slice(
                         </td>
                       </tr>
                       {expandedPillId === pill.pill_id &&
-                        selectedPillId === pill.pill_id && (
+                        selectedPillId === pill.pill_id && 
+                        selectedPill.status === 1 &&(
                           <tr className="bg-gray-50">
                             <td colSpan="6" className="border px-4 py-2">
                               <div className="flex justify-center items-start mt-3">
