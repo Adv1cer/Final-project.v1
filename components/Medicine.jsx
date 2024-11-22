@@ -39,6 +39,8 @@ export default function MedicineComponent() {
   const [currentPillStockPage, setCurrentPillStockPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [Dpillstock_id , setDpillstock_id] = useState("");
+
   useEffect(() => {
     if (status === "loading") {
       return;
@@ -210,7 +212,8 @@ export default function MedicineComponent() {
     fetchTypes();
     fetchUnits();
   };
-  const handleEditClick = (pill) => {
+  const handleEditClick = (pill , pillstock_id) => {
+    console.log("Edit pill:", pill);
     setSelectedPill(pill);
     setSelectedPillId(pill.pill_id);
     setPillName(pill.pill_name);
@@ -221,10 +224,10 @@ export default function MedicineComponent() {
     );
     setTotal(pill.total);
     setUnit(pill.unit_type);
-  };
+    setDpillstock_id(pillstock_id);
+  }; 
 
   const handleEditPill = async () => {
-    console.log(formPill);
     const formPill = {
       pillName,
       dose,
@@ -235,11 +238,11 @@ export default function MedicineComponent() {
     };
 
     console.log("Sending data to server:", formPill);
-    console.log("Request URL:", `/api/medicine/${selectedPill.pillstock_id}`);
+    console.log("Request URL:", `/api/medicine/${Dpillstock_id}`);
 
     try {
       const response = await fetch(
-        `/api/medicine/${selectedPill.pillstock_id}`,
+        `/api/medicine/${Dpillstock_id}`,
         {
           method: "PUT",
           headers: {
@@ -420,8 +423,6 @@ export default function MedicineComponent() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar session={session} />
-      <Taskbar />
       <main className="flex-1 p-5">
         <div className="flex justify-center items-start mt-10">
           <div className="w-full max-w-6xl bg-white shadow-md table-rounded">
@@ -877,7 +878,9 @@ export default function MedicineComponent() {
                                     </thead>
                                     <tbody>
                                       {currentPillStock.length > 0 ? (
-                                        currentPillStock.map((item) => (
+                                        currentPillStock
+                                        .filter((item) => item.total > 0)
+                                        .map((item) => (
                                           <tr
                                             key={item.pillstock_id}
                                             className={`border ${
@@ -903,7 +906,7 @@ export default function MedicineComponent() {
                                                 ? new Date(
                                                     item.expire
                                                   ).toLocaleDateString()
-                                                : "N/A"}
+                                                : "ไม่ได้ระบุ"}
                                             </td>
                                             <td className="border px-4 py-2">
                                               {item.total}
@@ -917,7 +920,7 @@ export default function MedicineComponent() {
                                                   <Button
                                                     className="bg-yellow-400 text-white rounded"
                                                     onClick={() =>
-                                                      handleEditClick(item)
+                                                      handleEditClick(pill , item.pillstock_id)
                                                     }
                                                   >
                                                     แก้ไขสต็อกยา
@@ -933,6 +936,20 @@ export default function MedicineComponent() {
                                                     </DialogDescription>
                                                   </DialogHeader>
                                                   <div className="grid gap-4 py-4">
+                                                  <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                      <Label
+                                                        htmlFor="stock_id"
+                                                        className="text-right"
+                                                      >
+                                                        รหัสสต็อกยา
+                                                      </Label>
+                                                      <span
+                                                        id="stock_id"
+                                                        className="col-span-3"
+                                                      >
+                                                        {item.pillstock_id}
+                                                      </span>
+                                                    </div>
                                                     <div className="grid mx-10 grid-cols-4 items-center gap-4">
                                                       <Label
                                                         htmlFor="name"
@@ -944,7 +961,7 @@ export default function MedicineComponent() {
                                                         id="name"
                                                         className="col-span-3"
                                                       >
-                                                        {pillName}
+                                                        {item.pill_name}
                                                       </span>
                                                     </div>
                                                     <div className="grid mx-10 grid-cols-4 items-center gap-4">
@@ -987,6 +1004,38 @@ export default function MedicineComponent() {
                                                         className="col-span-3"
                                                       >
                                                         {unit}
+                                                      </span>
+                                                    </div>
+                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                      <Label
+                                                        htmlFor="current_total"
+                                                        className="text-right"
+                                                      >
+                                                        จำนวนปัจจุบัน
+                                                      </Label>
+                                                      <span
+                                                        id="unit"
+                                                        className="col-span-3"
+                                                      >
+                                                        {item.total}
+                                                      </span>
+                                                    </div>
+                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                      <Label
+                                                        htmlFor="current_expire"
+                                                        className="text-right"
+                                                      >
+                                                        วันหมดอายุ
+                                                      </Label>
+                                                      <span
+                                                        id="unit"
+                                                        className="col-span-3"
+                                                      >
+                                                                                                      {item.expire
+                                                ? new Date(
+                                                    item.expire
+                                                  ).toLocaleDateString()
+                                                : "N/A"}
                                                       </span>
                                                     </div>
                                                     <div className="grid mx-10 grid-cols-4 items-center gap-4">

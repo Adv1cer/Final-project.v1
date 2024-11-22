@@ -8,10 +8,13 @@ import Footer from "@/components/Footer";
 export default function() {
 
   return (
-    <main>
+    <div className="flex flex-col justify-between h-screen m-0 p-0">
       <Navbar />
-      <LoginForm />
-    </main>
+      <div className="flex-grow flex justify-center items-center bg-custom">
+        <LoginForm />
+      </div>
+      <Footer />
+    </div>
   );
 };
 

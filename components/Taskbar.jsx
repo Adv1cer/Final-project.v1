@@ -20,7 +20,6 @@ export default function Taskbar() {
     router.push(path);
   };
 
-
   if (status === "loading") {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700">
@@ -53,7 +52,11 @@ export default function Taskbar() {
             {session?.user?.name || "Guest"} ได้เข้าสู่ระบบ
           </h3>
         </div>
-        <div className={`justify-center content-center space-x-4 mr-10 ${loading ? 'cursor-wait' : ''}`}>
+        <div
+          className={`justify-center content-center space-x-4 mr-10 ${
+            loading ? "cursor-wait" : ""
+          }`}
+        >
           <Button
             id="dashboard"
             className={`${
@@ -61,6 +64,10 @@ export default function Taskbar() {
             } transition-colors`}
             onClick={() => handleClick("/homepage")}
           >
+            {/* <svg
+              class="animate-spin h-5 w-5 mr-3"
+              viewBox="0 0 24 24"
+            ></svg> */}
             หนัาหลัก
           </Button>
           <Button
@@ -70,6 +77,10 @@ export default function Taskbar() {
             } transition-colors`}
             onClick={() => handleClick("/medicine")}
           >
+            {/* <svg
+              class="animate-spin h-5 w-5 mr-3"
+              viewBox="0 0 24 24"
+            ></svg> */}
             คลังยา
           </Button>
           <Button
@@ -79,6 +90,10 @@ export default function Taskbar() {
             } transition-colors`}
             onClick={() => handleClick("/dashboard")}
           >
+            {/* <svg
+              class="animate-spin h-5 w-5 mr-3"
+              viewBox="0 0 24 24"
+            ></svg> */}
             แดชบอร์ด
           </Button>
         </div>

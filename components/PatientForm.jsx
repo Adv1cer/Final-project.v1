@@ -1,35 +1,24 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Select from "react-select";
+import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import handlepatientFormSubmit from "@/components/service/patient_form/handleSubmit";
+import handleCheckStudent from "@/components/service/patient_form/handleCheckStudent";
+import options from "@/components/service/patient_form/symptomOption";
 
-const options = [
-  { value: 1, label: "ปวดหัวเป็นไข้" },
-  { value: 2, label: "ปวดท้อง" },
-  { value: 3, label: "ท้องเสีย" },
-  { value: 4, label: "ปวดรอบเดือน" },
-  { value: 5, label: "เป็นหวัด" },
-  { value: 6, label: "ปวดฟัน" },
-  { value: 7, label: "เป็นแผล" },
-  { value: 8, label: "เป็นลม" },
-  { value: 9, label: "ตาเจ็บ" },
-  { value: 10, label: "ผื่นคัน" },
-  { value: 11, label: "นอนพัก" },
-  { value: 12, label: "อื่นๆ" },
-];
+const Select = dynamic(() => import("react-select"), { ssr: false });
 
 export default function PatientForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-
   const [studentId, setStudentId] = useState("");
   const [studentName, setStudentName] = useState("");
   const [role, setRole] = useState("");
-  const [isStudentExists, setIsStudentExists] = useState(null); // เช็คว่าพบข้อมูลหรือไม่
+  const [isStudentExists, setIsStudentExists] = useState(null); 
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [otherSymptom, setOtherSymptom] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,90 +31,26 @@ export default function PatientForm() {
     setRole(event.target.value);
   };
 
-  const handleCheckStudent = async () => {
-    if (!studentId.trim()) {
-      toast({
-        variant: "destructive",
-        title: "ข้อผิดพลาด",
-        description: "กรุณากรอกรหัสนักศึกษา",
-      });
-      return;
-    }
+  const onSubmit = handlepatientFormSubmit({
+    studentName,
+    studentId,
+    role,
+    selectedSymptoms,
+    otherSymptom,
+    options,
+  });
 
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/check_id?patient_id=${studentId}`);
-      const data = await response.json();
-      console.log(data);
-
-
-      if (data.exists) {
-        setStudentName(data.patient_name);
-        setRole(data.role);
-        setIsStudentExists(true);
-      } else {
-        setIsStudentExists(false);
-        setStudentName("");
-        setRole("");
-      }
-    } catch (error) {
-      console.error("Error checking student:", error);
-      toast({
-        variant: "destructive",
-        title: "ข้อผิดพลาด",
-        description: "ไม่สามารถตรวจสอบข้อมูลได้",
-      });
-    } finally {
-      setLoading(false);
-    }
+  
+  const handleCheckStudentClick = () => {
+    handleCheckStudent({
+      studentId,
+      setStudentName,
+      setRole,
+      setIsStudentExists,
+      setLoading,
+    });
   };
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-
-    const confirmMessage = `
-    ยืนยันข้อมูล:
-    ชื่อ-นามสกุล: ${studentName}
-    รหัสนักศึกษา: ${studentId}
-    สถานะ: ${role}
-    อาการ: ${selectedSymptoms
-      .map(symptom => options.find(option => option.value === symptom)?.label)
-      .join(", ")}
-    ${
-      selectedSymptoms.includes(12) 
-      ? `หมายเหตุ: ${otherSymptom}` 
-      : ""
-    }
-  `;
-
-    if (!window.confirm(confirmMessage)) return;
-
-    const formData = {
-      student_id: studentId,
-      student_name: studentName,
-      role,
-      symptom_ids: selectedSymptoms,
-      other_symptom: selectedSymptoms.includes(12) ? otherSymptom : "",
-    };
-
-    try {
-      const response = await fetch("/api/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        toast({ variant: "success", title: "บันทึกข้อมูลสำเร็จ" });
-        location.reload();
-      } else {
-        toast({ variant: "destructive", title: "ไม่สามารถบันทึกข้อมูลได้" });
-      }
-    } catch (error) {
-      console.error("Error submitting data:", error);
-      toast({ variant: "destructive", title: "เกิดข้อผิดพลาด" });
-    }
-  };
+  
 
   return (
     <div className="flex justify-center items-center max-w-lg w-full">
@@ -150,7 +75,7 @@ export default function PatientForm() {
               <Button
                 type="button"
                 className="bg-blue-700 hover:bg-blue-400"
-                onClick={handleCheckStudent}
+                onClick={handleCheckStudentClick}
                 disabled={loading}
               >
                 ตรวจสอบ

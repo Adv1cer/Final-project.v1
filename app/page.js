@@ -1,8 +1,11 @@
 "use client";
 import React from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import PatientForm from "@/components/PatientForm";
+import dynamic from "next/dynamic";
+
+// Dynamically import components
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
+const PatientForm = dynamic(() => import("@/components/PatientForm"), { ssr: false });
 
 const HealthForm = () => {
   return (
