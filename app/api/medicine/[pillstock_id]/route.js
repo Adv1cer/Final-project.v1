@@ -52,28 +52,10 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const { pillstock_id } = params;
-  let body;
+  const { total, expireDate } = await request.json();
 
-  try {
-    body = await request.json();
-  } catch (err) {
-    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  const { total } = body;
-
-  if (!pillstock_id) {
-    return new Response(JSON.stringify({ error: 'Pillstock ID is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  if (typeof total !== 'number' || total < 0) {
-    return new Response(JSON.stringify({ error: 'Invalid total value' }), {
+  if (!pillstock_id || total === undefined || !expireDate) {
+    return new Response(JSON.stringify({ error: 'Pillstock ID, total, and expireDate are required' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -86,10 +68,10 @@ export async function PUT(request, { params }) {
     const [result] = await connection.execute(
       `
       UPDATE pillstock
-      SET total = ?
+      SET total = ?, expire = ?
       WHERE pillstock_id = ?
       `,
-      [total, pillstock_id]
+      [total, expireDate, pillstock_id]
     );
 
     if (result.affectedRows === 0) {
@@ -99,13 +81,12 @@ export async function PUT(request, { params }) {
       });
     }
 
-    return new Response(JSON.stringify({ message: 'Pill updated successfully' }), {
+    return new Response(JSON.stringify({ message: 'Pillstock updated successfully' }), {
+      status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-
   } catch (error) {
-    console.error('Database error:', error);
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

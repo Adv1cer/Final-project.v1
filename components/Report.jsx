@@ -392,6 +392,21 @@ function Report() {
   const currentYearThai = currentYearChart + 543;
   const lastFiveYearsChartThai = currentYearThai - 5;
 
+  const formatDate = (datetime) => {
+    const date = new Date(datetime);
+    const dateString = date.toLocaleDateString("th-TH", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const timeString = date.toLocaleTimeString("th-TH", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${dateString}\nเวลา ${timeString}`;
+  };
+
+
 
   if (loading) {
     return (
@@ -588,36 +603,37 @@ function Report() {
             </Card>
           </div>
         </div>
+
         <div className="flex flex-col items-center items-start mt-10">
-          <div className="w-full max-w-xl bg-white shadow-md table-rounded">
-            <div className="bg-blue-800 text-white p-4 flex items-center justify-between table-rounded">
-              <h3 className="text-xl font-semibold">ยาที่จ่ายในเดือน</h3>
-              <h3 className="text-xl whitespace-nowrap text-center">
-                {currentMonth} {currentYear}
-              </h3>
-            </div>
-            <table className="border-collapse border mx-auto w-full max-w-7xl">
-              <thead>
-                <tr className="border bg-gray-200">
-                  <th className="border px-4 py-2">ไอดียา</th>
-                  <th className="border px-4 py-2">ชื่อยา</th>
-                  <th className="border px-4 py-2">โดส</th>
-                  <th className="border px-4 py-2">ครั้ง</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pillStats.map((pill) => (
-                  <tr key={pill.pillstock_id} className="border">
-                    <td className="border px-4 py-2">{pill.pillstock_id}</td>
-                    <td className="border px-4 py-2">{pill.pill_name}</td>
-                    <td className="border px-4 py-2">{pill.dose}</td>
-                    <td className="border px-4 py-2">{pill.count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <div className="w-full max-w-xl bg-white shadow-md table-rounded">
+        <div className="bg-blue-800 text-white p-4 flex items-center justify-between table-rounded">
+          <h3 className="text-xl font-semibold">ยาที่จ่ายในเดือน</h3>
+          <h3 className="text-xl whitespace-nowrap text-center">
+            {currentMonth} {currentYear}
+          </h3>
         </div>
+        <table className="border-collapse border mx-auto w-full max-w-7xl">
+          <thead>
+            <tr className="border bg-gray-200">
+              <th className="border px-4 py-2">ไอดียา</th>
+              <th className="border px-4 py-2">ชื่อยา</th>
+              <th className="border px-4 py-2">โดส</th>
+              <th className="border px-4 py-2">จำนวนที่จ่าย</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pillStats.map((pill) => (
+              <tr key={pill.pillstock_id} className="border">
+                <td className="border px-4 py-2">{pill.pillstock_id}</td>
+                <td className="border px-4 py-2">{pill.pill_name}</td>
+                <td className="border px-4 py-2">{pill.dose}</td>
+                <td className="border px-4 py-2">{pill.total_quantity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
       </div>
       
       
@@ -632,16 +648,6 @@ function Report() {
             <div className="bg-blue-800 text-white p-4 flex items-center justify-between rounded-t-lg">
               <h1 className="text-xl font-semibold">ประวัตินักศึกษา</h1>
               <div className="flex items-center space-x-4">
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายวัน
-                </button>
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายสัปดาห์
-                </button>
-                <button className="text-white font-semibold hover:underline">
-                  ผู้ใช้รายเดือน
-                </button>
-
                 <input
                   type="text"
                   placeholder="search"
@@ -687,86 +693,122 @@ function Report() {
                       <td className="py-2 px-4 border-b text-center">
                         {new Date(ticket.datetime).toLocaleString()}
                       </td>
-                      <Dialog>
+                      <Dialog className="">
                         <DialogTrigger asChild>
                           <td className="py-2 px-4 border-b text-blue-700 cursor-pointer text-center">
                             ดูข้อมูล
                           </td>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="w-full">
                           <DialogHeader>
                             <DialogTitle>Patient Ticket</DialogTitle>
                             <DialogDescription>
                               Status: Finished
                             </DialogDescription>
                           </DialogHeader>
-                          <div className="grid gap-2 py-1">
-                            <h3 className="ml-10">
-                              Name: {ticket.patient_name}
-                            </h3>
-                            <h3 className="ml-10">
-                              Student ID: {ticket.patient_id}
-                            </h3>
-                            <h3 className="ml-10">
-                              Check-in Time:{" "}
-                              {new Date(ticket.datetime).toLocaleString()}
-                            </h3>
+                          <div className="grid gap-1">
+                            <div>
+                              <h3 className="ml-10 text-lg">ชื่อ-นามสกุล</h3>
+                              <div className="ml-16">{ticket.patient_name}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">รหัสนักศึกษา</h3>
+                              <div className="ml-16">{ticket.patient_id}</div>
+                            </div>
+                            <div>
+                              <h3 className="ml-10 text-lg">เวลาเช็คอิน</h3>
+                              <div className="ml-16">
+                                {formatDate(ticket.datetime)}
+                              </div>
+                            </div>
                             <br />
-                            <h3 className="ml-10">Patient Symptoms</h3>
+                            <h3 className="ml-10 text-lg">อาการของผู้ป่วย</h3>
                             {ticket.symptom_names ? (
-                              <div className="ml-10 space-y-2">
-                                {ticket.symptom_names
-                                  .split(",")
-                                  .map((symptom, index) => (
-                                    <p key={index} className="block">
-                                      {symptom.trim()}
-                                    </p>
-                                  ))}
+                              <div className="ml-10 space-y-2 text-lg">
+                                <p className="ml-10">
+                                  {ticket.symptom_names
+                                    .split(",")
+                                    .map((symptom) => symptom.trim())
+                                    .join(", ")}
+                                </p>
                               </div>
                             ) : (
-                              <p className="ml-10">No symptoms recorded</p>
+                              <p className="ml-10 text-lg">
+                                ไม่มีอาการที่บันทึกไว้
+                              </p>
                             )}
-                            {ticket.other_symptom && (
+                            {ticket.other_symptoms && (
                               <div className="ml-10 mt-2">
-                                <h3>Other Symptoms:</h3>
-                                <p>{ticket.other_symptom}</p>
+                                <h3>หมายเหตุ</h3>
+                                <div className="space-y-2 ml-10">
+                                  {ticket.other_symptoms
+                                    .split(",")
+                                    .map((symptom, index) => (
+                                      <p key={index}>{symptom.trim()}</p>
+                                    ))}
+                                </div>
                               </div>
                             )}
+
                             {ticket.pill_quantities && (
-                              <div className="ml-10 mt-2">
-                                <h3>Pill Records:</h3>
+                              <div className="mt-6">
                                 <div className="space-y-2">
-                                  {ticket.pill_quantities
-                                    .split(",")
-                                    .map((quantity, index) => (
-                                      <div key={index} className="block">
-                                        <p>
-                                          Pill Name:{" "}
-                                          {ticket.pill_names
-                                            ? ticket.pill_names.split(",")[
-                                                index
-                                              ]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>
-                                          Pill Stock ID:{" "}
-                                          {ticket.pillstock_ids
-                                            ? ticket.pillstock_ids.split(",")[
-                                                index
-                                              ]
-                                            : "Unknown"}
-                                        </p>
-                                        <p>Quantity: {quantity.trim()}</p>
-                                      </div>
-                                    ))}
+                                  <table className="border-collapse border mx-auto w-full max-w-4xl">
+                                    <thead>
+                                      <tr className="border bg-blue-800 text-white">
+                                        <th className="border px-4 py-2">
+                                          ไอดียา
+                                        </th>
+                                        <th className="border px-4 py-2">
+                                          ชื่อยา
+                                        </th>
+                                        <th className="border px-4 py-2">
+                                          จำนวน
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {ticket.pill_quantities
+                                        .split(",")
+                                        .map((quantity, index) => (
+                                          <tr
+                                            key={index}
+                                            className="border bg-blue-100"
+                                          >
+                                            <td className="border px-4 py-2">
+                                              {ticket.pillstock_ids
+                                                ? ticket.pillstock_ids.split(
+                                                    ","
+                                                  )[index]
+                                                : "Unknown"}
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                              {ticket.pill_names
+                                                ? ticket.pill_names.split(",")[
+                                                    index
+                                                  ]
+                                                : "Unknown"}
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                              {quantity.trim()}{" "}
+                                              {ticket.unit_type}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                    </tbody>
+                                  </table>
                                 </div>
                               </div>
                             )}
                           </div>
                           <DialogFooter>
                             <DialogClose asChild>
-                              <Button type="button" variant="secondary">
-                                Close
+                              <Button
+                                className="text-white mx-4 px-6"
+                                type="button"
+                                variant="destructive"
+                              >
+                                ปิด
                               </Button>
                             </DialogClose>
                           </DialogFooter>

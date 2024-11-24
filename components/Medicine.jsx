@@ -26,7 +26,7 @@ export default function MedicineComponent() {
   const [pillName, setPillName] = useState("");
   const [dose, setDose] = useState("");
   const [typeName, setTypeName] = useState("");
-  const [expireDate, setExpireDate] = useState("");
+  const [expireDate, setexpireDate] = useState("");
   const [total, setTotal] = useState("");
   const [unit, setUnit] = useState("");
   const [types, setTypes] = useState([]);
@@ -38,9 +38,9 @@ export default function MedicineComponent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPillStockPage, setCurrentPillStockPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [Dpillstock_id, setDpillstock_id] = useState("");
 
-  const [Dpillstock_id , setDpillstock_id] = useState("");
-
+  
   useEffect(() => {
     if (status === "loading") {
       return;
@@ -212,20 +212,20 @@ export default function MedicineComponent() {
     fetchTypes();
     fetchUnits();
   };
-  const handleEditClick = (pill , pillstock_id) => {
+  const handleEditClick = (pill, pillstock_id) => {
     console.log("Edit pill:", pill);
     setSelectedPill(pill);
     setSelectedPillId(pill.pill_id);
     setPillName(pill.pill_name);
     setDose(pill.dose);
     setTypeName(pill.type_name);
-    setExpireDate(
+    setexpireDate(
       pill.expire ? new Date(pill.expire).toISOString().split("T")[0] : ""
     );
     setTotal(pill.total);
     setUnit(pill.unit_type);
     setDpillstock_id(pillstock_id);
-  }; 
+  };
 
   const handleEditPill = async () => {
     const formPill = {
@@ -241,16 +241,13 @@ export default function MedicineComponent() {
     console.log("Request URL:", `/api/medicine/${Dpillstock_id}`);
 
     try {
-      const response = await fetch(
-        `/api/medicine/${Dpillstock_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formPill),
-        }
-      );
+      const response = await fetch(`/api/medicine/${Dpillstock_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formPill),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -392,10 +389,10 @@ export default function MedicineComponent() {
   };
   const filteredPills = Array.isArray(PillList)
     ? PillList.filter(
-        (pill) =>
-          pill.status === 1 &&
-          pill.pill_name.toLowerCase().startsWith(searchQuery.toLowerCase())
-      )
+      (pill) =>
+        pill.status === 1 &&
+        pill.pill_name.toLowerCase().startsWith(searchQuery.toLowerCase())
+    )
     : [];
   const totalPages = Math.ceil(filteredPills.length / itemsPerPage);
   const indexLast = currentPage * itemsPerPage;
@@ -879,232 +876,236 @@ export default function MedicineComponent() {
                                     <tbody>
                                       {currentPillStock.length > 0 ? (
                                         currentPillStock
-                                        .filter((item) => item.total > 0)
-                                        .map((item) => (
-                                          <tr
-                                            key={item.pillstock_id}
-                                            className={`border ${
-                                              Number(item.total) <= 100
-                                                ? "bg-red-500 text-red-500"
-                                                : "bg-blue-100 text-black"
-                                            }`}
-                                          >
-                                            <td className="border px-4 py-2">
-                                              {item.pillstock_id}
-                                            </td>
-                                            <td className="border px-4 py-2">
-                                              {item.pill_name}
-                                            </td>
-                                            <td className="border px-4 py-2">
-                                              {item.dose}
-                                            </td>
-                                            <td className="border px-4 py-2">
-                                              {item.type_name}
-                                            </td>
-                                            <td className="border px-4 py-2">
-                                              {item.expire
-                                                ? new Date(
+                                          .filter((item) => item.total > 0)
+                                          .map((item) => (
+                                            <tr
+                                              key={item.pillstock_id}
+                                              className={`border ${Number(item.total) <= 100
+                                                  ? "bg-red-500 text-red-500"
+                                                  : "bg-blue-100 text-black"
+                                                }`}
+                                            >
+                                              <td className="border px-4 py-2">
+                                                {item.pillstock_id}
+                                              </td>
+                                              <td className="border px-4 py-2">
+                                                {item.pill_name}
+                                              </td>
+                                              <td className="border px-4 py-2">
+                                                {item.dose}
+                                              </td>
+                                              <td className="border px-4 py-2">
+                                                {item.type_name}
+                                              </td>
+                                              <td className="border px-4 py-2">
+                                                {item.expire
+                                                  ? new Date(
                                                     item.expire
                                                   ).toLocaleDateString()
-                                                : "ไม่ได้ระบุ"}
-                                            </td>
-                                            <td className="border px-4 py-2">
-                                              {item.total}
-                                            </td>
-                                            <td className="border px-4 py-2">
-                                              {item.unit_type}
-                                            </td>
-                                            <td className="border px-4 py-2 flex justify-center">
-                                              <Dialog>
-                                                <DialogTrigger asChild>
-                                                  <Button
-                                                    className="bg-yellow-400 text-white rounded"
-                                                    onClick={() =>
-                                                      handleEditClick(pill , item.pillstock_id)
-                                                    }
-                                                  >
-                                                    แก้ไขสต็อกยา
-                                                  </Button>
-                                                </DialogTrigger>
-                                                <DialogContent className="sm:max-w-[425px]">
-                                                  <DialogHeader>
-                                                    <DialogTitle>
-                                                      แก้ไขข้อมูลสต็อกยา
-                                                    </DialogTitle>
-                                                    <DialogDescription>
-                                                      แก้ไขข้อมูลสต็อกยาและบันทึกข้อมูล
-                                                    </DialogDescription>
-                                                  </DialogHeader>
-                                                  <div className="grid gap-4 py-4">
-                                                  <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="stock_id"
-                                                        className="text-right"
-                                                      >
-                                                        รหัสสต็อกยา
-                                                      </Label>
-                                                      <span
-                                                        id="stock_id"
-                                                        className="col-span-3"
-                                                      >
-                                                        {item.pillstock_id}
-                                                      </span>
+                                                  : "ไม่ได้ระบุ"}
+                                              </td>
+                                              <td className="border px-4 py-2">
+                                                {item.total}
+                                              </td>
+                                              <td className="border px-4 py-2">
+                                                {item.unit_type}
+                                              </td>
+                                              <td className="border px-4 py-2 flex justify-center">
+                                                <Dialog>
+                                                  <DialogTrigger asChild>
+                                                    <Button
+                                                      className="bg-yellow-400 text-white rounded"
+                                                      onClick={() =>
+                                                        handleEditClick(
+                                                          pill,
+                                                          item.pillstock_id
+                                                        )
+                                                      }
+                                                    >
+                                                      แก้ไขสต็อกยา
+                                                    </Button>
+                                                  </DialogTrigger>
+                                                  <DialogContent className="sm:max-w-[425px]">
+                                                    <DialogHeader>
+                                                      <DialogTitle>
+                                                        แก้ไขข้อมูลสต็อกยา
+                                                      </DialogTitle>
+                                                      <DialogDescription>
+                                                        แก้ไขข้อมูลสต็อกยาและบันทึกข้อมูล
+                                                      </DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="grid gap-4 py-4">
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="stock_id"
+                                                          className="text-right"
+                                                        >
+                                                          รหัสสต็อกยา
+                                                        </Label>
+                                                        <span
+                                                          id="stock_id"
+                                                          className="col-span-3"
+                                                        >
+                                                          {item.pillstock_id}
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="name"
+                                                          className="text-right"
+                                                        >
+                                                          ชื่อยา
+                                                        </Label>
+                                                        <span
+                                                          id="name"
+                                                          className="col-span-3"
+                                                        >
+                                                          {item.pill_name}
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="dose"
+                                                          className="text-right"
+                                                        >
+                                                          โดส
+                                                        </Label>
+                                                        <span
+                                                          id="dose"
+                                                          className="col-span-3"
+                                                        >
+                                                          {dose}
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="typeName"
+                                                          className="text-right"
+                                                        >
+                                                          ประเภทของยา
+                                                        </Label>
+                                                        <span
+                                                          id="typeName"
+                                                          className="col-span-3"
+                                                        >
+                                                          {typeName}
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="unit"
+                                                          className="text-right"
+                                                        >
+                                                          บรรจุภัณฑ์
+                                                        </Label>
+                                                        <span
+                                                          id="unit"
+                                                          className="col-span-3"
+                                                        >
+                                                          {unit}
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="current_total"
+                                                          className="text-right"
+                                                        >
+                                                          จำนวนปัจจุบัน
+                                                        </Label>
+                                                        <span
+                                                          id="unit"
+                                                          className="col-span-3"
+                                                        >
+                                                          {item.total}
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="current_expire"
+                                                          className="text-right"
+                                                        >
+                                                          วันหมดอายุ
+                                                        </Label>
+                                                        <span
+                                                          id="unit"
+                                                          className="col-span-3"
+                                                        >
+                                                          {item.expire
+                                                            ? new Date(
+                                                              item.expire
+                                                            ).toLocaleDateString()
+                                                            : "N/A"}
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4">
+                                                        <Label
+                                                          htmlFor="total"
+                                                          className="text-right"
+                                                        >
+                                                          จำนวน
+                                                        </Label>
+                                                        <Input
+                                                          id="total"
+                                                          type="number"
+                                                          value={total}
+                                                          onChange={(e) =>
+                                                            setTotal(
+                                                              e.target.value
+                                                            )
+                                                          }
+                                                          className="col-span-3"
+                                                        />
+                                                      </div>
+                                                      <div className="grid mx-10 grid-cols-4 items-center gap-4 mt-4">
+                                                        <Label
+                                                          htmlFor="expire"
+                                                          className="text-right"
+                                                        >
+                                                          ว.ด.ป หมดอายุ
+                                                        </Label>
+                                                        <Input
+                                                          type="date"
+                                                          id="expire"
+                                                          value={expireDate}
+                                                          onChange={(e) =>
+                                                            setexpireDate(
+                                                              e.target.value
+                                                            )
+                                                          }
+                                                          className="col-span-3 border rounded px-2 py-1"
+                                                        />
+                                                      </div>
                                                     </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="name"
-                                                        className="text-right"
-                                                      >
-                                                        ชื่อยา
-                                                      </Label>
-                                                      <span
-                                                        id="name"
-                                                        className="col-span-3"
-                                                      >
-                                                        {item.pill_name}
-                                                      </span>
-                                                    </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="dose"
-                                                        className="text-right"
-                                                      >
-                                                        โดส
-                                                      </Label>
-                                                      <span
-                                                        id="dose"
-                                                        className="col-span-3"
-                                                      >
-                                                        {dose}
-                                                      </span>
-                                                    </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="typeName"
-                                                        className="text-right"
-                                                      >
-                                                        ประเภทของยา
-                                                      </Label>
-                                                      <span
-                                                        id="typeName"
-                                                        className="col-span-3"
-                                                      >
-                                                        {typeName}
-                                                      </span>
-                                                    </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="unit"
-                                                        className="text-right"
-                                                      >
-                                                        บรรจุภัณฑ์
-                                                      </Label>
-                                                      <span
-                                                        id="unit"
-                                                        className="col-span-3"
-                                                      >
-                                                        {unit}
-                                                      </span>
-                                                    </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="current_total"
-                                                        className="text-right"
-                                                      >
-                                                        จำนวนปัจจุบัน
-                                                      </Label>
-                                                      <span
-                                                        id="unit"
-                                                        className="col-span-3"
-                                                      >
-                                                        {item.total}
-                                                      </span>
-                                                    </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="current_expire"
-                                                        className="text-right"
-                                                      >
-                                                        วันหมดอายุ
-                                                      </Label>
-                                                      <span
-                                                        id="unit"
-                                                        className="col-span-3"
-                                                      >
-                                                                                                      {item.expire
-                                                ? new Date(
-                                                    item.expire
-                                                  ).toLocaleDateString()
-                                                : "N/A"}
-                                                      </span>
-                                                    </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4">
-                                                      <Label
-                                                        htmlFor="total"
-                                                        className="text-right"
-                                                      >
-                                                        จำนวน
-                                                      </Label>
-                                                      <Input
-                                                        id="total"
-                                                        type="number"
-                                                        value={total}
-                                                        onChange={(e) =>
-                                                          setTotal(
-                                                            e.target.value
-                                                          )
-                                                        }
-                                                        className="col-span-3"
-                                                      />
-                                                    </div>
-                                                    <div className="grid mx-10 grid-cols-4 items-center gap-4 mt-4">
-                                                      <Label
-                                                        htmlFor="expire"
-                                                        className="text-right"
-                                                      >
-                                                        ว.ด.ป หมดอายุ
-                                                      </Label>
-                                                      <Input
-                                                        type="date"
-                                                        id="expire"
-                                                        value={expireDate}
-                                                        onChange={(e) =>
-                                                          setExpireDate(
-                                                            e.target.value
-                                                          )
-                                                        }
-                                                        className="col-span-3 border rounded px-2 py-1"
-                                                      />
-                                                    </div>
-                                                  </div>
-                                                  <DialogFooter className="mt-4">
-                                                    <DialogClose asChild>
-                                                      <Button
-                                                        type="button"
-                                                        className="green_button"
-                                                        onClick={handleEditPill}
-                                                      >
-                                                        บันทึกข้อมูล
-                                                      </Button>
-                                                    </DialogClose>
-                                                    <DialogClose asChild>
-                                                      <Button
-                                                        className="px-5 py-2 bg-red-600 text-white rounded"
-                                                        onClick={() =>
-                                                          handleRemove(
-                                                            item.pillstock_id
-                                                          )
-                                                        }
-                                                      >
-                                                        ลบยา
-                                                      </Button>
-                                                    </DialogClose>
-                                                  </DialogFooter>
-                                                </DialogContent>
-                                              </Dialog>
-                                            </td>
-                                          </tr>
-                                        ))
+                                                    <DialogFooter className="mt-4">
+                                                      <DialogClose asChild>
+                                                        <Button
+                                                          type="button"
+                                                          className="green_button"
+                                                          onClick={
+                                                            handleEditPill
+                                                          }
+                                                        >
+                                                          บันทึกข้อมูล
+                                                        </Button>
+                                                      </DialogClose>
+                                                      <DialogClose asChild>
+                                                        <Button
+                                                          className="px-5 py-2 bg-red-600 text-white rounded"
+                                                          onClick={() =>
+                                                            handleRemove(
+                                                              item.pillstock_id
+                                                            )
+                                                          }
+                                                        >
+                                                          ลบยา
+                                                        </Button>
+                                                      </DialogClose>
+                                                    </DialogFooter>
+                                                  </DialogContent>
+                                                </Dialog>
+                                              </td>
+                                            </tr>
+                                          ))
                                       ) : (
                                         <tr>
                                           <td
@@ -1132,11 +1133,10 @@ export default function MedicineComponent() {
                                                 index + 1
                                               )
                                             }
-                                            className={`mx-1 px-3 py-1 rounded ${
-                                              currentPillStockPage === index + 1
+                                            className={`mx-1 px-3 py-1 rounded ${currentPillStockPage === index + 1
                                                 ? "bg-blue-500 text-white hover:bg-blue-700"
                                                 : "bg-gray-300 hover:bg-gray-500"
-                                            }`}
+                                              }`}
                                           >
                                             {index + 1}
                                           </button>
@@ -1168,11 +1168,10 @@ export default function MedicineComponent() {
                   <button
                     key={index}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`mx-1 px-3 py-1 rounded ${
-                      currentPage === index + 1
+                    className={`mx-1 px-3 py-1 rounded ${currentPage === index + 1
                         ? "bg-blue-500 text-white hover:bg-blue-700"
                         : "bg-gray-300 hover:bg-gray-500"
-                    }`}
+                      }`}
                   >
                     {index + 1}
                   </button>

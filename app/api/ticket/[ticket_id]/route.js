@@ -21,9 +21,10 @@ export async function GET(request, { params }) {
 
     const [ticketRows] = await connection.execute(
       `
-      SELECT pa.patientrecord_id, pa.datetime, pa.status, p.patient_name
+      SELECT pa.patientrecord_id, pa.datetime, pa.status, p.patient_name, sr.other_symptom
       FROM patientrecord pa
       JOIN patient p ON pa.patient_id = p.patient_id
+      LEFT JOIN symptomrecord sr ON pa.patientrecord_id = sr.patientrecord_id
       WHERE pa.patientrecord_id = ?
       `,
       [ticket_id]
