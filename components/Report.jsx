@@ -623,8 +623,8 @@ function Report() {
           </thead>
           <tbody>
             {pillStats.map((pill) => (
-              <tr key={pill.pillstock_id} className="border">
-                <td className="border px-4 py-2">{pill.pillstock_id}</td>
+              <tr key={pill.pill_id} className="border">
+                <td className="border px-4 py-2">{pill.pill_id}</td>
                 <td className="border px-4 py-2">{pill.pill_name}</td>
                 <td className="border px-4 py-2">{pill.dose}</td>
                 <td className="border px-4 py-2">{pill.total_quantity}</td>

@@ -303,7 +303,7 @@ export default function Prescriptions() {
                                             disabled={currentPage === 1}
                                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                         >
-                                            Previous
+                                            กลับ
                                         </button>
                                         <span className="mx-4 text-lg font-medium">
                                             Page {currentPage} of {totalPages}
@@ -313,7 +313,7 @@ export default function Prescriptions() {
                                             disabled={currentPage === totalPages}
                                             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                         >
-                                            Next
+                                            ถัดไป
                                         </button>
                                     </div>
                                 </div>
